@@ -1,0 +1,46 @@
+--[[
+
+Custom shader example
+---------------------
+
+This script creates a custom shader that displays a dot pattern. The shader has
+one parameter, 'dotsize'.
+
+The script creates a circle using the new shader by setting its style.shader
+property to the shader name, 'dots'.
+
+The render loop modifies style.dotsize, which is automatically passed to the
+shader by Nexpo.
+
+--]]
+
+
+require 'Nexpo'
+
+local shader_source = [[
+  uniform float dotsize;
+  
+  vec4 getcolor() {
+    vec2 xy = mod(texcoord, dotsize)-dotsize*0.5;
+    float d = cos(20.0*length(texcoord)) * 0.25 + 0.25;
+    float r = length(xy) < d*dotsize ? 1.0 : 0.0;
+    return vec4(r, r, r, 1.0);
+  }
+]]
+
+local shader_defaults = {
+  dotsize = 0.1,
+}
+
+addshader('dots', shader_source, shader_defaults)
+
+c = circle()
+c.style.shader = 'dots'
+c.size = 50
+
+function update()
+  c.style.dotsize = 0.01 + 0.05 * (math.cos(time()) * 0.5 + 0.5)
+  draw(c)
+end
+
+start()

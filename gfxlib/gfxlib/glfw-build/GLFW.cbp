@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="GLFW" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;CMake Files\docs\;CMake Files\src\;CMake Files\examples\;CMake Files\tests\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install">
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 install" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install/local">
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 install/local" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install/strip">
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 install/strip" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="list_install_components">
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 list_install_components" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="uninstall">
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 uninstall" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="glfw">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/libglfw3.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-D_GLFW_USE_CONFIG_H" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 glfw" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="glfw/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/libglfw3.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-D_GLFW_USE_CONFIG_H" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 glfw/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Boing">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Boing.app/Contents/MacOS/Boing" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Boing" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Boing/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Boing.app/Contents/MacOS/Boing" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Boing/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Gears">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Gears.app/Contents/MacOS/Gears" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Gears" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Gears/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Gears.app/Contents/MacOS/Gears" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Gears/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Simple">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Simple.app/Contents/MacOS/Simple" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Simple" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Simple/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Simple.app/Contents/MacOS/Simple" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Simple/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Split View">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Split View.app/Contents/MacOS/Split View" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Split View" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Split View/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Split View.app/Contents/MacOS/Split View" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Split View/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Wave">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Wave.app/Contents/MacOS/Wave" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Wave" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="Wave/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Wave.app/Contents/MacOS/Wave" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 Wave/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="accuracy">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/accuracy.app/Contents/MacOS/accuracy" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 accuracy" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="accuracy/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/accuracy.app/Contents/MacOS/accuracy" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 accuracy/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="clipboard">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/clipboard" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clipboard" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="clipboard/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/clipboard" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clipboard/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="defaults">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/defaults" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 defaults" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="defaults/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/defaults" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 defaults/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="events">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/events" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 events" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="events/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/events" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 events/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="fsaa">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/fsaa" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 fsaa" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="fsaa/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/fsaa" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 fsaa/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="gamma">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/gamma" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 gamma" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="gamma/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/gamma" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 gamma/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="glfwinfo">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/glfwinfo" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 glfwinfo" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="glfwinfo/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/glfwinfo" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 glfwinfo/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="iconify">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/iconify" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 iconify" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="iconify/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/iconify" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 iconify/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="joysticks">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/joysticks" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 joysticks" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="joysticks/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/joysticks" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 joysticks/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="modes">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/modes" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 modes" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="modes/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/modes" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 modes/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="peter">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/peter" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 peter" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="peter/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/peter" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 peter/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="reopen">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/reopen" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 reopen" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="reopen/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/reopen" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 reopen/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="sharing">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/sharing.app/Contents/MacOS/sharing" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 sharing" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="sharing/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/sharing.app/Contents/MacOS/sharing" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 sharing/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="tearing">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/tearing.app/Contents/MacOS/tearing" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 tearing" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="tearing/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/tearing.app/Contents/MacOS/tearing" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 tearing/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="threads">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/threads.app/Contents/MacOS/threads" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 threads" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="threads/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/threads.app/Contents/MacOS/threads" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 threads/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="title">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/title.app/Contents/MacOS/title" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 title" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="title/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/title.app/Contents/MacOS/title" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 title/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="windows">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/windows.app/Contents/MacOS/windows" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 windows" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="windows/fast">
+         <Option output="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/windows.app/Contents/MacOS/windows" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/5.0/include" />
+            <Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include" />
+            <Add directory="/Library/Frameworks" />
+            <Add directory="/System/Library/Frameworks" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps" />
+            <Add directory="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 windows/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps/getopt.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps/tinycthread.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/examples/boing.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/examples/gears.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/examples/simple.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/examples/splitview.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/examples/wave.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/clipboard.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_clipboard.m">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_gamma.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_init.m">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_joystick.m">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_monitor.m">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_time.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_window.m">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/context.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/gamma.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/init.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/input.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/joystick.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/monitor.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/nsgl_context.m">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/time.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/window.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/accuracy.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/clipboard.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/defaults.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/events.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/fsaa.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/gamma.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/glfwinfo.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/iconify.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/joysticks.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/modes.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/peter.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/reopen.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/sharing.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/tearing.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/threads.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/title.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/windows.c">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/glfw_config.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps/getopt.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/deps/tinycthread.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include/GLFW/glfw3.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/include/GLFW/glfw3native.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/cocoa_platform.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/internal.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/nsgl_platform.h">
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/cmake_uninstall.cmake.in">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/docs/Doxyfile.in">
+          <Option virtualFolder="CMake Files\docs\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/glfw_config.h.in">
+          <Option virtualFolder="CMake Files\src\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/glfwConfig.cmake.in">
+          <Option virtualFolder="CMake Files\src\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/glfwConfigVersion.cmake.in">
+          <Option virtualFolder="CMake Files\src\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/glfw3.pc.in">
+          <Option virtualFolder="CMake Files\src\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/src/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\src\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/examples/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\examples\" />
+      </Unit>
+      <Unit filename="/Users/will/Dropbox/gfxlib/gfxlib/glfw/tests/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\tests\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>

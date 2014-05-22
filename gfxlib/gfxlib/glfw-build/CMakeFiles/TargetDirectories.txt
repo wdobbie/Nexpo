@@ -1,0 +1,24 @@
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/CMakeFiles/Boing.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/CMakeFiles/Gears.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/CMakeFiles/Simple.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/CMakeFiles/Split View.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/examples/CMakeFiles/Wave.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/accuracy.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/clipboard.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/defaults.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/events.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/fsaa.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/gamma.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/src/CMakeFiles/glfw.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/glfwinfo.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/iconify.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/joysticks.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/modes.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/peter.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/reopen.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/sharing.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/tearing.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/threads.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/title.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/CMakeFiles/uninstall.dir
+/Users/will/Dropbox/gfxlib/gfxlib/glfw-build/tests/CMakeFiles/windows.dir
