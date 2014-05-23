@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QProcess>
-
+#include <QByteArray>
 
 namespace Ui {
 class MainWindow;
@@ -12,6 +12,7 @@ class MainWindow;
 class OutputRedirector;
 class FileEditor;
 class UpdateChecker;
+class ScriptStatusWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -23,22 +24,26 @@ public:
     void loadFile(const QString&);
     void runScript(const QString&);
     void stopCurrentScript();
+    FileEditor* currentEditor() const;
+    bool closeEditor(FileEditor*);
 
 public slots:
     void openFileAction();
     void updateTabTitles();
-    void sendScriptCommand(const QString&);
+    void writeToScript(const QByteArray&);
     void updateStatusBar();
     void editorStatusMessageChanged(const QString& msg, int timeout);
-    void showLatestVersion(const QString& version, const QString& link);
+    void showLatestVersion(const QString& version, const QString& link, const QString& message);
     void scriptProcessStateChanged(QProcess::ProcessState state);
     void scriptProcessStderrReady();
     void scriptProcessStdoutReady();
+    void updateCurrentEditor();
+    void onCurrentEditorChanged(FileEditor*);
+    void numberControlValueChanged(double value);
 
 signals:
     void scriptRunningChanged(bool);
-    void scriptFilenameChanged(const QString&);
-    void scriptElapsedChanged(double);
+    void currentEditorChanged(FileEditor*);
 
 private slots:
     void on_actionNew_triggered();
@@ -54,8 +59,6 @@ private slots:
     void on_actionRun_triggered();
 
     void on_action_Preferences_triggered();
-
-    void on_openTabs_currentChanged(int index);
 
     void on_actionStop_triggered();
 
@@ -89,8 +92,12 @@ private slots:
 
     void on_closeWelcomeButton_clicked();
 
+    void on_openTabs_currentChanged(int index);
+
+    void on_actionRestore_Last_Session_triggered();
+
 protected:
-    void closeEvent(QCloseEvent*);
+    virtual void closeEvent(QCloseEvent*);
     void dragEnterEvent(QDragEnterEvent* event);
     void dragMoveEvent(QDragMoveEvent* event);
     void dropEvent(QDropEvent* event);
@@ -111,11 +118,13 @@ private:
     QString m_runningScriptPath;
     qint64 m_scriptStartTime;
     UpdateChecker* m_updateChecker;
+    FileEditor* m_currentEditor;
+    ScriptStatusWidget* m_scriptStatusWidget;
 
     void startScriptProcess();
     void addRecentFile(const QString& path);
     void setStopAndRun();
-    void addEditor(FileEditor* editor, const QString&);
+    void addEditor(FileEditor* editor);
     void showCentralWidget();
     void setupWelcomeWidget();
     QString nexpoPath();
@@ -123,6 +132,15 @@ private:
     bool editorSaveAs(FileEditor*);
     bool closeTab(int);
     bool closeAllTabs();
+    void handleControlCommand(QByteArray);
+    int rowForControl(const QString&) const;
+    void sendControlCommand(const QByteArray& op, const QByteArray& param1, const QByteArray& param2);
+    void clearControls();
+
+    void controls_createNumberControl(const QByteArray& name, const QByteArray& minValueString,
+                                                  const QByteArray& maxValueString, const QByteArray& initialValueString);
+    void controls_setNumberValue(const QByteArray&, const QByteArray&);
+    void controls_setStringValue(const QByteArray&, const QByteArray&);
 };
 
 #endif // MAINWINDOW_H

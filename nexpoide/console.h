@@ -15,7 +15,7 @@ public:
     void setPrefixColor(const QColor&);
 
 signals:
-    void command(const QString&);
+    void command(const QByteArray&);
 
 public slots:
     void print(const QString&);

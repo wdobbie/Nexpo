@@ -7,5 +7,7 @@
     <file>images/fullscreen.png</file>
     <file>images/console.png</file>
     <file>images/edit.png</file>
+    <file>images/closetab-nohover.png</file>
+    <file>images/closetab.png</file>
 </qresource>
 </RCC>

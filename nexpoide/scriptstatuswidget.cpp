@@ -18,7 +18,8 @@ void ScriptStatusWidget::setName(const QString& name)
     ui->filename->setText(name);
 }
 
-void ScriptStatusWidget::setElapsedSeconds(double s)
+void ScriptStatusWidget::setStartTime(const QString& str)
 {
-    ui->elapsed->setText(QString::number(s, 'f', 4));
+    //ui->elapsed->setText(QString::number(s, 'f', 4));
+   ui->startTime->setText(str);
 }

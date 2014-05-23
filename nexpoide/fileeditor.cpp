@@ -381,7 +381,7 @@ FileEditor::FileEditor(QWidget *parent)
 }
 
 FileEditor::~FileEditor() {
-    //qDebug() << "FileEditor destructor";
+
 }
 
 void FileEditor::highlightFindText(const QString& text)
@@ -500,6 +500,13 @@ void FileEditor::keyPressEvent(QKeyEvent *e)
     }
 }
 
+void FileEditor::focusInEvent(QFocusEvent* e)
+{
+    QsciScintilla::focusInEvent(e);
+    emit gotFocus();
+}
+
+
 /*
 void FileEditor::showFindBox() {
     mFindBox->show();
@@ -527,7 +534,7 @@ void FileEditor::installLexer(const QString& suffix)
 {
     // Get lexer for this file
     QsciLexer* lex = lexerForExtension(suffix);
-
+    if (lex == lexer()) return;
 
     // Set lexer style and apply it to editor
     //lex->setParent(this);
@@ -561,8 +568,11 @@ void FileEditor::installLexer(const QString& suffix)
     setTabIndents(true);
     setIndentationGuidesForegroundColor(Qt::lightGray);
     setBraceMatching(QsciScintilla::SloppyBraceMatch);
-    setMatchedBraceBackgroundColor(QColor::fromRgbF(.678, .847, .602, 1));
-    setUnmatchedBraceBackgroundColor(QColor::fromRgbF(.980, .502, .447, 1));
+    setMatchedBraceBackgroundColor(QColor::fromRgbF(.3, .847, .302, 1));
+    setMatchedBraceForegroundColor(Qt::white);
+    setUnmatchedBraceBackgroundColor(QColor::fromRgbF(.880, .302, .147, 1));
+    setUnmatchedBraceForegroundColor(Qt::white);
+
     setWrapMode(QsciScintilla::WrapWord);
     setWrapIndentMode(QsciScintilla::WrapIndentSame);
     setFrameShape(QFrame::NoFrame);
@@ -593,7 +603,12 @@ bool FileEditor::open(const QString& path)
     if (!file.open(QFile::ReadOnly | QFile::Text)) return false;
     if (!read(&file)) return false;
 
-    setFileInfo(&info);
+    // Set dir and title
+    m_dir = info.absolutePath();
+    setTitle(info.fileName());
+
+    // Set lexer
+    installLexer(info.suffix());
 
     // Set modified to false (it seems to be true intially?)
     setModified(false);
@@ -602,46 +617,64 @@ bool FileEditor::open(const QString& path)
 
 QString FileEditor::title() const
 {
-    if (m_path.size() == 0) {
-        return "Untitled";
-    } else {
-        QFileInfo info(m_path);
-        return info.fileName();
+    return m_title;
+}
+
+void FileEditor::setTitle(const QString& title)
+{
+    if (title.size() > 0 && title != m_title) {
+        m_title = title;
+        emit titleChanged(title);
     }
 }
 
-void FileEditor::setFileInfo(const QFileInfo* info)
+QString FileEditor::path() const
 {
-    // Set lexer
-    installLexer(info->suffix());
-
-    // Set members
-    m_path = info->canonicalFilePath();
-    emit titleChanged(title());
+    if (m_dir.size() > 0) {
+        return m_dir + "/" + m_title;
+    } else {
+        return QString();
+    }
 }
 
 bool FileEditor::saveFile()
 {
-    if (m_path.size() == 0) return false;
+    if (m_dir.size() == 0) return false;
 
-    QSaveFile file(m_path);
+    QSaveFile file(path());
     file.setDirectWriteFallback(true);  // fallback to not using a temp file if we can't create one
     file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
     QByteArray data = text().toUtf8();
     qint64 written = file.write(data);
     if (written != data.size() || !file.commit()) {
-        std::cerr << "Failed to save " << m_path.toUtf8().data() << std::endl;
+        std::cerr << "Failed to save " << file.fileName().toUtf8().data() << std::endl;
         return false;
     } else {
+        // Set new lexer if suffix changed
+        QFileInfo info(file.fileName());
+        installLexer(info.suffix());
         setModified(false);
-        QFileInfo info(m_path);
-        setFileInfo(&info);
         return true;
     }
 }
 
 bool FileEditor::saveFileAs(const QString& newPath)
 {
-    m_path = newPath;
-    return saveFile();
+    // Save old title/dir in case save fails
+    QString oldDir = m_dir;
+    QString oldTitle = m_title;
+
+    QFileInfo info(newPath);
+    m_dir = info.absolutePath();
+    m_title = info.fileName();
+
+    if (saveFile()) {
+        if (oldTitle != m_title) emit titleChanged(m_title);
+        return true;
+    } else {
+        // revert to old path
+        m_title = oldTitle;
+        m_dir = oldDir;
+        return false;
+    }
 }

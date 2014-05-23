@@ -22,12 +22,15 @@ public:
 
     bool open(const QString& path);
     QString title() const;
-    QString path() const { return m_path; }
+    void setTitle(const QString&);
+    QString path() const;
 
 signals:
     void titleChanged(const QString&);
     void escapePressed();
     void statusMessageChanged(const QString& status, int timeout = 0);
+    void gotFocus();
+    void lostFocus();
 
 public slots:
     bool saveFile();
@@ -41,13 +44,14 @@ public slots:
 
 protected:
     void keyPressEvent(QKeyEvent *e);
+    void focusInEvent(QFocusEvent*);
 
 private:
     void installLexer(const QString&);
     void setFileInfo(const QFileInfo* info);
 
 
-    QString m_path;
+    QString m_dir;
     QString m_title;
     int m_findIndicator;
     QString m_findText;

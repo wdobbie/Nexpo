@@ -5,6 +5,8 @@
 #include "updatechecker.h"
 #include "aboutform.h"
 #include "application.h"
+#include "scriptstatuswidget.h"
+#include "sliderwithspinner.h"
 
 #include <QFileDialog>
 #include <QSettings>
@@ -20,13 +22,16 @@
 #include <QMimeData>
 #include <iostream>
 
-#include "scriptstatuswidget.h"
+
+static const char kControlPrefix = '\x05';
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_scriptProcess(0)
     , m_updateChecker(0)
+    , m_currentEditor(0)
+    , m_scriptStatusWidget(0)
 {
     ui->setupUi(this);
 
@@ -43,18 +48,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_stdOutRedirector, &OutputRedirector::output, ui->console, &Console::print);
     connect(m_stdErrRedirector, &OutputRedirector::output, ui->console, &Console::printError);
 
-    // Create script status widget
-    ScriptStatusWidget* scriptStatusWidget = new ScriptStatusWidget(this);
-    connect(this, &MainWindow::scriptElapsedChanged, scriptStatusWidget, &ScriptStatusWidget::setElapsedSeconds);
-    connect(this, &MainWindow::scriptFilenameChanged, scriptStatusWidget, &ScriptStatusWidget::setName);
-
     // Add left spacer
     QWidget* spacer1 = new QWidget(this);
     spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->mainToolBar->insertWidget(ui->actionConsole, spacer1);
 
     // Add status widget
-    QAction* scriptStatusAction = ui->mainToolBar->insertWidget(ui->actionConsole, scriptStatusWidget);
+    m_scriptStatusWidget = new ScriptStatusWidget(this);
+    QAction* scriptStatusAction = ui->mainToolBar->insertWidget(ui->actionConsole, m_scriptStatusWidget);
     scriptStatusAction->setVisible(false);
     connect(this, &MainWindow::scriptRunningChanged, scriptStatusAction, &QAction::setVisible);
 
@@ -68,8 +69,15 @@ MainWindow::MainWindow(QWidget *parent)
     restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     restoreState(settings.value("mainWindowState").toByteArray());
 
+    // Extra options for tab widget (can't set from form designer)
+    ui->openTabs->tabBar()->setExpanding(true);
+    ui->openTabs->tabBar()->setDrawBase(false);
+
     // Hide find widget (can't do this in form designer)
     ui->findWidget->hide();
+
+    // Connect editor changed signal
+    connect(this, &MainWindow::currentEditorChanged, this, &MainWindow::onCurrentEditorChanged);
 
     // Populate recent files menu
     createRecentFileActions();
@@ -84,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent)
     startScriptProcess();
 
     // Connect console input commands to script stdinput
-    connect(ui->console, &Console::command, this, &MainWindow::sendScriptCommand);
+    connect(ui->console, &Console::command, this, &MainWindow::writeToScript);
 }
 
 MainWindow::~MainWindow()
@@ -96,14 +104,22 @@ MainWindow::~MainWindow()
 bool MainWindow::closeAllTabs()
 {
     while (ui->openTabs->count() > 0) {
-        if (!closeTab(ui->openTabs->count()-1)) {
+        if (!closeEditor(qobject_cast<FileEditor*>(ui->openTabs->currentWidget()))) {
             return false;
         }
     }
     return true;
 }
 
-void MainWindow::closeEvent(QCloseEvent* event) {
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    // TODO: investigate why this function is called twice when using command-Q on OS X
+    // It's only called once when clicking the close window button
+
+
+    QSettings settings;
+
     // Ask to terminate running script
     if (m_scriptRunning) {
         QMessageBox msg;
@@ -127,6 +143,20 @@ void MainWindow::closeEvent(QCloseEvent* event) {
         }
     }
 
+    // Save open tab list as last session
+    QStringList session;
+    for (int i=0; i<ui->openTabs->count(); i++) {
+        FileEditor* editor = qobject_cast<FileEditor*>(ui->openTabs->widget(i));
+        if (editor && editor->path().size()) {
+            session.append(editor->path());
+        }
+    }
+    if (session.count() > 0) {
+        settings.setValue("lastSession", session);
+        settings.setValue("lastSessionTime", QDateTime::currentDateTime());
+    }
+
+    // Close all tabs
     if (!closeAllTabs()) {
         event->ignore();
         return;
@@ -136,18 +166,15 @@ void MainWindow::closeEvent(QCloseEvent* event) {
     m_scriptRunning = false;
 
     // Save window arrangement
-    QSettings settings;
     settings.setValue("mainWindowGeometry", saveGeometry());
     settings.setValue("mainWindowState", saveState());
 }
 
-static QString strippedName(const QString& fullFileName)
+void MainWindow::addEditor(FileEditor* editor)
 {
-    return QFileInfo(fullFileName).fileName();
-}
+    // Update currentEditor when editor gets focus
+    connect(editor, &FileEditor::gotFocus, this, &MainWindow::updateCurrentEditor);
 
-void MainWindow::addEditor(FileEditor* editor, const QString& name)
-{
     // The status bar connection must be queued, or else there is a crash during what looks like scintilla's paint event
     connect(editor, &QsciScintilla::cursorPositionChanged, this, &MainWindow::updateStatusBar, Qt::QueuedConnection);
     connect(editor, &QsciScintilla::modificationChanged, this, &MainWindow::updateTabTitles);
@@ -159,18 +186,22 @@ void MainWindow::addEditor(FileEditor* editor, const QString& name)
            ui->findWidget->hide();
        }
     });
+
     // clear highlighted text when find box closes
     connect(ui->findLineEdit, &FindLineEdit::hidden, editor, &FileEditor::unhighlightFindText);
 
     // status message
     connect(editor, &FileEditor::statusMessageChanged, this, &MainWindow::editorStatusMessageChanged, Qt::QueuedConnection);
 
+    // enable/disable copy/cut actions
     connect(editor, &FileEditor::copyAvailable, [=](bool avail){
-       ui->actionCopy->setEnabled(avail);
-       ui->actionCut->setEnabled(avail);
+        if (qobject_cast<FileEditor*>(sender()) == m_currentEditor) {
+            ui->actionCopy->setEnabled(avail);
+            ui->actionCut->setEnabled(avail);
+        }
     });
 
-    int index = ui->openTabs->addTab(editor, name);
+    int index = ui->openTabs->addTab(editor, editor->title());
     ui->openTabs->setCurrentIndex(index);
 }
 
@@ -198,7 +229,7 @@ void MainWindow::loadFile(const QString& path)
         return;
     }
 
-    addEditor(editor, strippedName(path));
+    addEditor(editor);
     addRecentFile(editor->path());
     showCentralWidget();
 }
@@ -226,9 +257,24 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 void MainWindow::on_actionNew_triggered()
 {
+    // Get next free "Untitled #" number
+    QString defaultName = QStringLiteral("Untitled");
+    unsigned int num = 1;
+    for (int i=0; i<ui->openTabs->count(); i++) {
+        FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->widget(i));
+        if (!editor) continue;
+        if (editor->title().compare(defaultName, Qt::CaseInsensitive) == 0) {
+            num = qMax(num, 2U);
+        } else if (editor->title().startsWith(defaultName, Qt::CaseInsensitive)) {
+            num = qMax(num, editor->title().mid(defaultName.size()).toUInt()+1);
+        }
+    }
+
+    QString newName = (num == 1) ? defaultName : QString("%1 %2").arg(defaultName).arg(num);
+
     FileEditor* editor = new FileEditor(this);
-    addEditor(editor, "Untitled");
-    editor->beginUndoAction();
+    editor->setTitle(newName);
+    addEditor(editor);
     editor->insert(
         "require 'Nexpo'\n"
         "\n"
@@ -239,8 +285,7 @@ void MainWindow::on_actionNew_triggered()
         "end\n"
         "\n"
         "start()\n");
-    editor->endUndoAction();
-    editor->setModified(false);
+    editor->setModified(false);     // so can close tab without resistance
 }
 
 
@@ -264,11 +309,11 @@ void MainWindow::updateTabTitles()
     }
 }
 
-void MainWindow::sendScriptCommand(const QString& cmd)
+void MainWindow::writeToScript(const QByteArray& cmd)
 {
     if (m_scriptProcess && m_scriptRunning) {
-        m_scriptProcess->write(cmd.toUtf8());
-        m_scriptProcess->write("\n");
+        m_scriptProcess->write(cmd);
+        m_scriptProcess->write(QByteArrayLiteral("\n"));
     } else {
         ui->console->printError("No script is running\n");
     }
@@ -276,13 +321,12 @@ void MainWindow::sendScriptCommand(const QString& cmd)
 
 void MainWindow::updateStatusBar()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor == 0) {
+    if (currentEditor() == 0) {
         ui->statusBar->clearMessage();
     } else {
         if (!ui->findWidget->isVisible() || ui->findLineEdit->text().size() == 0) {
             int line, index;
-            editor->getCursorPosition(&line, &index);
+            currentEditor()->getCursorPosition(&line, &index);
             ui->statusBar->showMessage(QString("Line %1, Column %2").arg(line+1).arg(index+1));
         }
     }
@@ -290,7 +334,7 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::editorStatusMessageChanged(const QString &msg, int timeout)
 {
-    if (ui->openTabs->currentWidget() == sender()) {
+    if (currentEditor() == sender()) {
         ui->statusBar->showMessage(msg, timeout);
     }
 }
@@ -315,11 +359,19 @@ static bool isNewerVersion(const QString& version) {
     return false;
 }
 
-void MainWindow::showLatestVersion(const QString &version, const QString &link)
+void MainWindow::showLatestVersion(const QString &version, const QString &urlString, const QString& message)
 {
     if (isNewerVersion(version)) {
+        QUrl url(urlString);
+        QString link = urlString;
+        if (url.isValid()) {
+            link = QString("<a href=\"%1\">%2</a>").arg(urlString).arg(url.fileName());
+        }
         ui->updateVersion->setText(version);
         ui->updateUrl->setText(link);
+        ui->updateUrl->setToolTip(urlString);
+        ui->updateMessage->setText(message);
+        ui->updateMessage->setVisible(message.size() > 0);
         ui->updateAvailableWidget->show();
     }
     m_updateChecker->deleteLater();
@@ -337,12 +389,11 @@ void MainWindow::createRecentFileActions()
     updateRecentFileActions();
 }
 
-// Returns false if user cancelled the action, true otherwise
-bool MainWindow::closeTab(int index)
+bool MainWindow::closeEditor(FileEditor* editor)
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->widget(index));
-    if (!editor) return true;
+    if (editor == 0) return false;
 
+    // Get user consent if it has unsaved changes
     if (editor->isModified()) {
         QMessageBox msg(this);
         msg.setText(editor->title() + " has been modified.");
@@ -365,7 +416,19 @@ bool MainWindow::closeTab(int index)
         }
     }
 
-    ui->openTabs->removeTab(index);
+    // Close tab if it's in a tab
+    int tabIndex = ui->openTabs->indexOf(editor);
+    if (tabIndex > 0) {
+        ui->openTabs->removeTab(tabIndex);
+    }
+
+    // Unset currentEditor if it's the current editor
+    if (m_currentEditor == editor) {
+        m_currentEditor = 0;
+        emit currentEditorChanged(0);
+    }
+
+    // Delete
     delete editor;
 
     return true;
@@ -373,7 +436,7 @@ bool MainWindow::closeTab(int index)
 
 void MainWindow::on_openTabs_tabCloseRequested(int index)
 {
-    closeTab(index);
+    closeEditor(qobject_cast<FileEditor*>(ui->openTabs->widget(index)));
 }
 
 void MainWindow::on_action_Open_triggered()
@@ -393,31 +456,77 @@ void MainWindow::updateRecentFileActions()
     QStringList files = settings.value("recentFileList").toStringList();
     int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
 
-    ui->recentFilesListWidget->clear();
+    // Delete current entries
+    while (ui->recentFilesContainer->layout()->count() > 0) {
+        if (QLayoutItem* item = ui->recentFilesContainer->layout()->takeAt(0)) {
+            if (QWidget* widget = item->widget()) {
+                delete widget;
+            }
+        }
+    }
 
+    // Stylesheet for QToolButtons that appear as hyperlinks
+    const QString btnStyle = QStringLiteral("QToolButton { background: transparent; border: none; text-decoration: underline; color: blue; font-size: 12pt; } QToolButton QWidget { color: black; font-size: 11pt; }");
+
+    // Update actions and create buttons
     QFileIconProvider ip;
     for (int i=0; i<numRecentFiles; i++) {
-        recentFileActions[i]->setText(files[i]);
-        recentFileActions[i]->setData(files[i]);
-        recentFileActions[i]->setVisible(true);
-
         QFileInfo info(files[i]);
 
-        QListWidgetItem* item = new QListWidgetItem(ui->recentFilesListWidget);
-        ui->recentFilesListWidget->addItem(item);
-        QToolButton* btn = new QToolButton(ui->recentFilesListWidget);
+        recentFileActions[i]->setText(files[i]);
+        recentFileActions[i]->setData(files[i]);
+        recentFileActions[i]->setToolTip("Open " + info.fileName());
+        recentFileActions[i]->setVisible(true);
+
+
+        QToolButton* btn = new QToolButton(ui->recentFilesContainer);
         btn->setDefaultAction(recentFileActions[i]);
         if (info.exists()) {
             btn->setIcon(ip.icon(info));
         } else {
             btn->setIcon(QProxyStyle().standardIcon(QStyle::SP_FileIcon));
         }
-        btn->setStyleSheet("QToolButton { background: transparent; border: none; text-decoration: underline; color: blue; font-size: 12pt;}");
+        btn->setStyleSheet(btnStyle);
         btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         btn->setCursor(Qt::PointingHandCursor);
-        ui->recentFilesListWidget->setItemWidget(item, btn);
+        ui->recentFilesContainer->layout()->addWidget(btn);
     }
 
+    // Create "restore last session" button
+    QStringList lastSession = settings.value("lastSession").toStringList();
+    if (lastSession.count() > 0) {
+        QDateTime lastSessionTime = settings.value("lastSessionTime").toDateTime();
+        QString tooltip;
+
+        // Start tooltip with timestamp if we have it
+        if (lastSessionTime.isValid()) {
+            tooltip = lastSessionTime.toString("MMM d, h:mm ap: ");
+        }
+
+        // Append filenames to tooltip
+        QStringList filenames;
+        for (int i=0; i<lastSession.count(); i++) {
+            QFileInfo info(lastSession[i]);
+            filenames.append(info.fileName());
+        }
+        tooltip += filenames.join(", ");
+
+        ui->actionRestore_Last_Session->setToolTip(tooltip);
+        ui->actionRestore_Last_Session->setEnabled(true);
+        QToolButton* restoreButton = new QToolButton;
+        ui->actionRestore_Last_Session->setText(QString("Restore last session (%1 file%2)")
+                                                .arg(lastSession.count())
+                                                .arg(lastSession.count() == 1 ? "" : "s"));
+        restoreButton->setStyleSheet(btnStyle);
+        restoreButton->setCursor(Qt::PointingHandCursor);
+        restoreButton->setDefaultAction(ui->actionRestore_Last_Session);
+        QWidget* spacer = new QWidget(this);
+        spacer->setFixedHeight(15);
+        ui->recentFilesContainer->layout()->addWidget(spacer);
+        ui->recentFilesContainer->layout()->addWidget(restoreButton);
+    }
+
+    // Hide unused actions (in menu)
     for (int i=numRecentFiles; i<MaxRecentFiles; i++) {
         recentFileActions[i]->setVisible(false);
     }
@@ -442,23 +551,30 @@ bool MainWindow::editorSaveAs(FileEditor* editor)
 {
     if (editor == 0) return false;
 
+
     QString savePath = editor->path();
     QSettings settings;
-    if (savePath.size() == 0) {
-        savePath = settings.value("lastSavePath",
-            QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString()
-                + "/" + editor->title();
+    std::cerr << settings.value("lastSavePath").toString().toUtf8().data() << std::endl;
+    bool isNexpoExtension = true;
+    if (savePath.size()) {
+        // Check file extension
+        QFileInfo info(savePath);
+        isNexpoExtension = (info.suffix().compare("nexpo", Qt::CaseInsensitive) == 0);
+    } else {
+        QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        savePath = settings.value("lastSavePath", defaultPath).toString() + "/" + editor->title();
     }
 
-    QString fileName = QFileDialog::getSaveFileName(this,
-        "Save As", savePath, "Nexpo files (*.nexpo *.lua);;All files (*.*)");
+    QString fileName = QFileDialog::getSaveFileName(
+                this,
+                "Save As",
+                savePath,
+                isNexpoExtension ? "Nexpo files (*.nexpo *.lua);;All files (*.*)" : QString());
 
     if (fileName.size() == 0) return false;
 
     QFileInfo info(fileName);
-    if (info.exists()) {
-        settings.setValue("lastSavePath", info.absolutePath());
-    }
+    settings.setValue("lastSavePath", info.absolutePath());
 
     if (!editor->saveFileAs(fileName)) {
         std::cerr << "Failed to save " << info.absoluteFilePath().toUtf8().data() << std::endl;
@@ -488,16 +604,12 @@ bool MainWindow::editorSave(FileEditor* editor)
 
 void MainWindow::on_action_Save_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor == 0) return;
-
-    editorSave(editor);
+    editorSave(currentEditor());
 }
 
 void MainWindow::on_actionSave_As_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    editorSaveAs(editor);
+    editorSaveAs(currentEditor());
 }
 
 
@@ -542,12 +654,153 @@ void MainWindow::startScriptProcess()
     m_scriptProcess->start(playerPath);
 }
 
+void MainWindow::handleControlCommand(QByteArray cmd)
+{
+    int opLen = cmd.indexOf(' ');
+    if (opLen < 0) opLen = cmd.size();
+    QByteArray op = cmd.left(opLen);
+
+    const int maxParams = 6;
+    int numParams=0;
+    QByteArray params[maxParams];
+    for (int index=opLen+1; index < cmd.size() && numParams < maxParams; numParams++)
+    {
+        int nextSpace = cmd.indexOf(' ', index);
+        if (nextSpace == -1) nextSpace = cmd.size();
+        int paramLen = nextSpace - index;
+        if (paramLen == 0) break;
+        params[numParams] = cmd.mid(index, paramLen);
+        index = nextSpace + 1;
+    }
+
+    if (op == QByteArrayLiteral("numbervalue")) {
+        controls_setNumberValue(params[0], params[1]);
+    } else if (op == QByteArrayLiteral("stringvalue")) {
+        controls_setStringValue(params[0], QByteArray::fromHex(params[1]));
+    } else if (op == QByteArrayLiteral("numbercontrol")) {
+        controls_createNumberControl(params[0], params[1], params[2], params[3]);
+    }
+}
+
+// Look up a control by name
+int MainWindow::rowForControl(const QString& name) const
+{
+    for (int i=0; i<ui->controlsLayout->rowCount(); i++) {
+        QLayoutItem* item = ui->controlsLayout->itemAt(i, QFormLayout::FieldRole);
+        if (item) {
+            QWidget* widget = item->widget();
+            if (widget && widget->objectName() == name) return i;
+        }
+    }
+    return -1;
+}
+
+void MainWindow::clearControls()
+{
+    while (ui->controlsLayout->count() > 0) {
+        delete ui->controlsLayout->itemAt(0)->widget();
+    }
+    ui->controlsDockWidget->hide();
+}
+
+
+void MainWindow::sendControlCommand(const QByteArray &op, const QByteArray &param1, const QByteArray &param2)
+{
+    QByteArray cmd;
+    cmd.reserve(3+op.size()+param1.size()+param2.size());
+    cmd.append(kControlPrefix);
+    cmd.append(op);
+    cmd.append(' ');
+    cmd.append(param1);
+    cmd.append(' ');
+    cmd.append(param2);
+    writeToScript(cmd);
+}
+
+void MainWindow::numberControlValueChanged(double value)
+{
+    QWidget* widget = qobject_cast<QWidget*> (sender());
+    if (!widget) return;
+    sendControlCommand(QByteArrayLiteral("numbervalue"), widget->objectName().toUtf8(), QByteArray::number(value));
+}
+
+void MainWindow::controls_createNumberControl(const QByteArray& name, const QByteArray& minValueString,
+                                              const QByteArray& maxValueString, const QByteArray& initialValueString)
+{
+    // Delete old control if it exists
+    int oldRow = rowForControl(name);
+    if (oldRow >= 0) {
+        delete ui->controlsLayout->itemAt(oldRow, QFormLayout::LabelRole)->widget();
+        delete ui->controlsLayout->itemAt(oldRow, QFormLayout::FieldRole)->widget();
+    }
+
+    bool ok;
+    double minValue = minValueString.toDouble(&ok);
+    if (!ok) return;
+    double maxValue = maxValueString.toDouble(&ok);
+    if (!ok) return;
+    double initialValue = initialValueString.toDouble(&ok);
+    if (!ok) return;
+
+    SliderWithSpinner* widget = new SliderWithSpinner;
+    widget->setMinValue(minValue);
+    widget->setMaxValue(maxValue);
+    widget->setValue(initialValue);
+    widget->setObjectName(name);
+    connect(widget, &SliderWithSpinner::valueChanged, this, &MainWindow::numberControlValueChanged);
+    QLabel* label = new QLabel;
+    label->setText(name);
+    ui->controlsLayout->addRow(label, widget);
+    ui->controlsDockWidget->show();
+}
+
+void MainWindow::controls_setNumberValue(const QByteArray& name, const QByteArray& valueString)
+{
+    bool ok;
+    double value = valueString.toDouble(&ok);
+    if (!ok) return;
+    int row = rowForControl(name);
+    if (row < 0) return;
+    QWidget* widget = ui->controlsLayout->itemAt(row, QFormLayout::FieldRole)->widget();
+    SliderWithSpinner* slider = qobject_cast<SliderWithSpinner*> (widget);
+    if (slider) slider->setValue(value);
+
+}
+
+void MainWindow::controls_setStringValue(const QByteArray &, const QByteArray &)
+{
+
+}
+
 void MainWindow::scriptProcessStderrReady() {
     ui->console->printError(m_scriptProcess->readAllStandardError());
 }
 
 void MainWindow::scriptProcessStdoutReady() {
-    ui->console->print(m_scriptProcess->readAllStandardOutput());
+
+    while (true) {
+        QByteArray line = m_scriptProcess->readLine();
+        if (line.endsWith('\n')) line.chop(1);
+        if (line.size() == 0) break;
+        if (line.startsWith(kControlPrefix)) {
+            handleControlCommand(line.mid(1));
+        } else {
+            ui->console->print(line);
+        }
+    }
+}
+
+FileEditor* MainWindow::currentEditor() const {
+    return m_currentEditor;
+}
+
+void MainWindow::updateCurrentEditor()
+{
+    FileEditor* editor = qobject_cast<FileEditor*>(focusWidget());
+    if (editor != 0 && editor != m_currentEditor) {
+        m_currentEditor = editor;
+        emit currentEditorChanged(m_currentEditor);
+    }
 }
 
 void MainWindow::scriptProcessStateChanged(QProcess::ProcessState state)
@@ -567,6 +820,7 @@ void MainWindow::scriptProcessStateChanged(QProcess::ProcessState state)
         if (ui->actionAuto_hide_console->isChecked()) {
             ui->consoleDockWidget->hide();
         }
+        clearControls();
         setStopAndRun();
         startScriptProcess();
         break;
@@ -596,10 +850,10 @@ void MainWindow::runScript(const QString& scriptPath)
         ui->actionConsole->setChecked(true);
         m_scriptProcess->write(m_runningScriptPath.toUtf8() + "\n");
         m_scriptRunning = true;
-        emit scriptRunningChanged(m_scriptRunning);
-        emit scriptFilenameChanged(scriptInfo.fileName());
-        emit scriptElapsedChanged(0);
         m_scriptStartTime = QDateTime::currentMSecsSinceEpoch();
+        m_scriptStatusWidget->setName(scriptInfo.fileName());
+        m_scriptStatusWidget->setStartTime(QDateTime::currentDateTime().toString("h:m:s ap"));
+        emit scriptRunningChanged(m_scriptRunning);
         setStopAndRun();
     }
 }
@@ -621,17 +875,20 @@ void MainWindow::setStopAndRun() {
         } else {
             if (m_scriptProcess->state() == QProcess::Running) {
                 // We can run if there is a valid editor
-
-                FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-                if (editor != 0) canRun = true;
+                if (currentEditor()) canRun = true;
             }
         }
     }
+
 
     ui->actionRun->setEnabled(canRun);
     ui->actionRun->setVisible(canRun);
     ui->actionStop->setEnabled(canStop);
     ui->actionStop->setVisible(canStop);
+    // If can't do either, just show a disabled run button
+    if (canRun == false && canStop == false) {
+        ui->actionRun->setVisible(true);
+    }
 
     if (m_scriptRunning) {
         QFileInfo info(m_runningScriptPath);
@@ -643,15 +900,14 @@ void MainWindow::setStopAndRun() {
 
 void MainWindow::on_actionRun_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor == 0) return;
-    if (editor->path().size() == 0) {
+    if (currentEditor() == 0) return;
+    if (currentEditor()->path().size() == 0) {
         ui->actionSave_As->trigger();
     }
-    if (editor->isModified()) {
-        if (!editor->saveFile()) return;
+    if (currentEditor()->isModified()) {
+        if (!currentEditor()->saveFile()) return;
     }
-    runScript(editor->path());
+    runScript(currentEditor()->path());
 }
 
 
@@ -661,37 +917,45 @@ void MainWindow::on_action_Preferences_triggered()
 }
 
 
-void MainWindow::on_openTabs_currentChanged(int)
+void MainWindow::onCurrentEditorChanged(FileEditor* editor)
 {
     setStopAndRun();    // we may be able to run now if we just opened a tab
+
+    // If all editors closed
     if (ui->openTabs->count() == 0) {
         ui->findWidget->hide();
         ui->actionSave_As->setDisabled(true);
         ui->action_Save->setDisabled(true);
     }
-    updateStatusBar();
-    showCentralWidget();
 
-    // close file
+    updateStatusBar();
+
+    // close file action
     ui->actionClose_File->setEnabled(ui->openTabs->count() > 0);
     ui->actionClose_All_Files->setEnabled(ui->openTabs->count() > 0);
 
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (!editor) return;
+    if (editor)  {
+        // window title and path
+        setWindowFilePath(editor->path());
+        setWindowTitle(editor->title() + " - " + qApp->applicationDisplayName());
 
-    // save/save as
-    ui->actionSave_As->setDisabled(false);
-    ui->action_Save->setDisabled(false);
+        // save/save as actions
+        ui->actionSave_As->setEnabled(true);
+        ui->action_Save->setEnabled(true);
 
-    // copy/paste
-    ui->actionCopy->setEnabled(editor->hasSelectedText());
-    ui->actionCut->setEnabled(editor->hasSelectedText());
+        // copy/paste actions
+        ui->actionCopy->setEnabled(editor->hasSelectedText());
+        ui->actionCut->setEnabled(editor->hasSelectedText());
 
-    // re-run find if find widget is visible
-    if (ui->findWidget->isVisible()) {
-        editor->highlightFindText(ui->findLineEdit->text());
+        // re-run find if find widget is visible
+        if (ui->findWidget->isVisible()) {
+            editor->highlightFindText(ui->findLineEdit->text());
+        }
+    } else {
+        setWindowTitle(qApp->applicationDisplayName());
     }
 }
+
 
 void MainWindow::showCentralWidget()
 {
@@ -716,10 +980,6 @@ void MainWindow::setupWelcomeWidget()
         m_updateChecker->checkForUpdate();
     }
 
-    // Don't show blue focus rectangle on OS X
-    ui->recentFilesListWidget->setAttribute(Qt::WA_MacShowFocusRect, false);
-    ui->examplesListWidget->setAttribute(Qt::WA_MacShowFocusRect, false);
-
     // Connect buttons
     connect(ui->newFileButton, &QAbstractButton::clicked, ui->actionNew, &QAction::trigger);
     connect(ui->openFileButton, &QAbstractButton::clicked, ui->action_Open, &QAction::trigger);
@@ -732,12 +992,11 @@ void MainWindow::setupWelcomeWidget()
         for (int i=0; i<files.count(); i++) {
             QFileInfo info = files[i];
             if (info.suffix().compare("nexpo", Qt::CaseInsensitive) == 0) {
-                QListWidgetItem* item = new QListWidgetItem(ui->examplesListWidget);
-                ui->examplesListWidget->addItem(item);
-                QToolButton* btn = new QToolButton(ui->examplesListWidget);
+                QToolButton* btn = new QToolButton(ui->examplesContainer);
                 QAction* action = new QAction(btn);
                 action->setData(info.absoluteFilePath());
                 action->setText(info.fileName());
+                action->setToolTip("Open " + info.fileName());
                 connect(action, &QAction::triggered, this, &MainWindow::openFileAction);
                 ui->menuOpen_Example->addAction(action);
                 btn->setDefaultAction(action);
@@ -745,7 +1004,7 @@ void MainWindow::setupWelcomeWidget()
                 btn->setStyleSheet("QToolButton { background: transparent; border: none; text-decoration: underline; color: blue; font-size: 12pt;}");
                 btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
                 btn->setCursor(Qt::PointingHandCursor);
-                ui->examplesListWidget->setItemWidget(item, btn);
+                ui->examplesContainer->layout()->addWidget(btn);
             }
         }
     }
@@ -772,59 +1031,47 @@ void MainWindow::on_consoleDockWidget_visibilityChanged(bool visible)
 
 void MainWindow::on_findLineEdit_textChanged(const QString& text)
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (!editor) return;
-    editor->highlightFindText(text);
+    if (currentEditor()) currentEditor()->highlightFindText(text);
 }
 
 void MainWindow::on_actionClose_File_triggered()
 {
-    int index = ui->openTabs->currentIndex();
-    if (index >= 0) on_openTabs_tabCloseRequested(index);
+    closeEditor(currentEditor());
 }
 
 void MainWindow::on_actionFind_next_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (!editor) return;
-    editor->findNextForward();
+    if (currentEditor()) currentEditor()->findNextForward();
 }
 
 void MainWindow::on_actionFind_Previous_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (!editor) return;
-    editor->findNextBackward();
+    if (currentEditor()) currentEditor()->findNextBackward();
 }
 
 void MainWindow::on_actionRedo_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor) editor->redo();
+    if (currentEditor()) currentEditor()->redo();
 }
 
 void MainWindow::on_actionUndo_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor) editor->undo();
+    if (currentEditor()) currentEditor()->undo();
 }
 
 void MainWindow::on_actionCut_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor) editor->cut();
+    if (currentEditor()) currentEditor()->cut();
 }
 
 void MainWindow::on_actionCopy_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor) editor->copy();
+    if (currentEditor()) currentEditor()->copy();
 }
 
 void MainWindow::on_actionPaste_triggered()
 {
-    FileEditor* editor = qobject_cast<FileEditor*> (ui->openTabs->currentWidget());
-    if (editor) editor->paste();
+    if (currentEditor()) currentEditor()->paste();
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -849,4 +1096,25 @@ void MainWindow::on_actionWelcome_triggered()
 void MainWindow::on_closeWelcomeButton_clicked()
 {
     showCentralWidget();
+}
+
+void MainWindow::on_openTabs_currentChanged(int)
+{
+    // May need to show welcome screen if all tabs closed
+    showCentralWidget();
+
+    // Give editor focus (doesn't happen by default)
+    // If we don't do this then currentEditor may not change when switching tabs,
+    // until the user clicks inside the editor
+    QWidget* widget = ui->openTabs->currentWidget();
+    if (widget) widget->setFocus();
+}
+
+void MainWindow::on_actionRestore_Last_Session_triggered()
+{
+    QSettings settings;
+    QStringList session = settings.value("lastSession").toStringList();
+    for (int i=0; i<session.count(); i++) {
+        loadFile(session[i]);
+    }
 }

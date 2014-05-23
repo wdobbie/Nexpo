@@ -12,12 +12,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = "NexpoEditor"
 TEMPLATE = app
-VERSION = 14.5.0
+VERSION = 14.5.2
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 # Disable debug output on release builds
-CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+#CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -28,7 +28,10 @@ SOURCES += main.cpp\
     updatechecker.cpp \
     aboutform.cpp \
     application.cpp \
-    scriptstatuswidget.cpp
+    scriptstatuswidget.cpp \
+    sliderwithspinner.cpp \
+    tabwidget.cpp \
+    tabbar.cpp
 
 HEADERS  += mainwindow.h \
         fileeditor.h \
@@ -38,11 +41,16 @@ HEADERS  += mainwindow.h \
     updatechecker.h \
     aboutform.h \
     application.h \
-    scriptstatuswidget.h
+    scriptstatuswidget.h \
+    sliderwithspinner.h \
+    tabwidget.h \
+    tabbar.h
 
 FORMS    += mainwindow.ui \
     aboutform.ui \
-    scriptstatuswidget.ui
+    scriptstatuswidget.ui \
+    scriptcontrols.ui \
+    sliderwithspinner.ui
 
 RESOURCES += \
     resources.qrc

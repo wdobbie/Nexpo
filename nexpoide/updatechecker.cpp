@@ -4,14 +4,17 @@
 #include <QNetworkAccessManager>
 #include <QUrl>
 #include <QString>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <iostream>
 
 #ifdef Q_OS_MAC
-    static const QString urlString = QStringLiteral("http://wdobbie.com/nexpo/download/osx.txt");
+    static const QString urlString = QStringLiteral("http://wdobbie.com/nexpo/download/osx.json");
 #elif defined(Q_OS_WIN)
-    static const QString urlString = QStringLiteral("http://wdobbie.com/nexpo/download/windows.txt");
+    static const QString urlString = QStringLiteral("http://wdobbie.com/nexpo/download/windows.json");
 #elif defined(Q_OS_LINUX)
-    static const QString urlString = QStringLiteral("http://wdobbie.com/nexpo/download/linux.txt");
+    static const QString urlString = QStringLiteral("http://wdobbie.com/nexpo/download/linux.json");
 #endif
 
 UpdateChecker::UpdateChecker(QObject *parent)
@@ -45,23 +48,25 @@ void UpdateChecker::checkForUpdate()
 void UpdateChecker::gotReply(QNetworkReply* reply)
 {
     if (reply->error() == QNetworkReply::NoError) {
-        QString latestVersion = reply->readLine().trimmed();
-        QString latestUrl = reply->readLine().trimmed();
 
-        if (latestVersion.size() == 0) {
-            std::cerr << "Couldn't find version string when fetching latest version info" << std::endl;
+        QJsonParseError err;
+        QJsonDocument json = QJsonDocument::fromJson(reply->readAll(), &err);
+        if (!json.isObject()) {
+            std::cerr << "Failed to parse update data: " << err.errorString().toUtf8().data() << std::endl;
             return;
         }
 
-        QUrl url(latestUrl);
-        if (!url.isValid()) {
-            std::cerr << "Got invalid url when fetching latest version info: " << latestUrl.toUtf8().data() << std::endl;
+        QJsonObject obj = json.object();
+        QString version = obj.value("version").toString();
+        QString url = obj.value("url").toString();
+        QString message = obj.value("message").toString();
+
+        if (version.size() == 0) {
+            std::cerr << "Update check failed: missing data" << std::endl;
             return;
         }
 
-        QString link = "<a href=\"" + latestUrl + "\">" + url.fileName() + "</a>";
-
-        emit gotLatestVersion(latestVersion, link);
+        emit gotLatestVersion(version, url, message);
 
     } else {
         std::cerr << "Failed to fetch latest version from "

@@ -15,7 +15,7 @@ public:
     void checkForUpdate();
 
 signals:
-    void gotLatestVersion(const QString& versionString, const QString& link);
+    void gotLatestVersion(const QString& versionString, const QString& link, const QString& message);
 
 public slots:
     void gotReply(QNetworkReply*);

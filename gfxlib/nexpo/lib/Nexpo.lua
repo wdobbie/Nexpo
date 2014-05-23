@@ -17,7 +17,7 @@ local function stripPath(p)
 end
 
 local function getNexpoPath()
-  return stripPath(debug.getinfo(2).short_src)
+  return stripPath(debug.getinfo(2).source:sub(2))
 end
 
 function warn(...)
@@ -302,7 +302,108 @@ local function commandForInput(input)
   return nil, err
 end
 
+local kControlPrefix = '\x05'
+local controlHandlers = {}
+
+local numberSetters = {}
+local numberGetters = {}
+local lastNumberSent = {}
+
+local function createNumberSetterGetter(name)
+  numberSetters[name] = loadstring('return function(v) ' .. name .. ' = v end')()
+  if not (numberSetters[name]) then
+    error("Failed to create setter for " .. name)
+  end
+
+  numberGetters[name] = loadstring('return ' .. name)
+  if not numberGetters[name] then
+    error("Failed to create getter for " .. name)
+  end
+end
+
+function slider(target, min, max, initial)
+  createNumberSetterGetter(target)
+  local value = numberGetters[target]()
+  
+  if max and min then
+    value = value or (max-min)/2
+  else
+    if value then
+      min = min or 0.2*value
+      max = max or 5.0*value
+      if min > max then
+        -- swap when value is negative
+        local tmp = min
+        min = max
+        max = min
+      end
+      
+    else
+      min = min or 0
+      max = max or 1
+      value = (max-min)/2
+    end
+  end
+  
+  assert(max>=min, 'Maximum value must be >= minimum value')
+ 
+  if not initial then
+    initial = numberGetters[target]() or (max-min)/2
+  end
+  
+  print(kControlPrefix..'numbercontrol '..target..' '..min..' '..max..' '..initial)
+end
+
+local function sendControlNumbers()
+  for name, getter in pairs(numberGetters) do
+    local success, value = pcall(getter)
+    if not success then
+      warn(string.format("Error while executing getter for %q: %s", name, value))
+      numberGetters[name] = nil
+    else
+      local lastSent = lastNumberSent[name]
+      if lastSent ~= value then
+        lastSent = value
+        print(kControlPrefix .. 'numbervalue ' .. name .. ' ' .. value)
+      end
+    end
+  end
+end
+
+function controlHandlers.numbervalue(params)
+  if #params ~= 3 then return end
+  local name = params[2]
+  local value = tonumber(params[3])
+  if not numberSetters[name] then
+    createNumberSetterGetter(name)
+  end
+  numberSetters[name](value)
+  lastNumberSent[name]=value
+end
+
+local function handleControlCommand(cmd)
+  local parts = {}
+  local index = 0
+  while index do
+    local space = cmd:find(' ', index)
+    if space then
+      table.insert(parts, cmd:sub(index, space-1))
+      index = space + 1
+    else
+      table.insert(parts, cmd:sub(index))
+      break
+    end
+  end
+
+  local handler = controlHandlers[parts[1]]
+  if handler then handler(parts) end
+end
+
 local function handleInputLine(line)
+  if line:sub(1,#kControlPrefix) == kControlPrefix then
+    return handleControlCommand(line:sub(2))
+  end
+  
   local command, err = commandForInput(line)
   if not command then
     error(err)
@@ -335,6 +436,7 @@ function start()
   while not gfxlib.shouldClose() do
     updateWindowTransform()   -- TODO: only need to call this on window resize callback
     update()
+    sendControlNumbers()
     collectgarbage 'collect'
     gfxlib.swapBuffers()
     pollEvents()

@@ -105,7 +105,7 @@ void Console::processCommand()
 
     prepareCommandLine();
 
-    emit command(inputString);
+    emit command(inputString.toUtf8());
 }
 
 // {true, 1.345778, 'hello world', {myfunc = print}, ffi.new('char[3]'), coroutine.create(print)}
@@ -367,7 +367,7 @@ static const QBrush ansiColorsBright[] = {
     QColor(88, 51, 225),
     QColor(249, 53, 248),
     QColor(20, 240, 240),
-    QColor(255, 255, 255), // QColor(233, 235, 235),
+    QColor(233, 235, 235),
 };
 
 void Console::applyFormatCode(QTextCursor& cur, unsigned int code)
@@ -414,7 +414,7 @@ void Console::applyFormatCode(QTextCursor& cur, unsigned int code)
     case 45:
     case 46:
     case 47:
-        fmt.setBackground(ansiColorsDark[code-40]); break;
+        fmt.setBackground(ansiColorsNormal[code-40]); break;
 
     // default background color
     case 49: fmt.setBackground(Qt::white); break;

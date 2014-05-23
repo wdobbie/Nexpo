@@ -25,6 +25,12 @@ g.style.color2 = rgb(0, 1, 0)
 g.style.sf = 4
 g.tf = 2
 
+slider('g.rotation', 0, 360)
+slider('g.style.sf', 0, 16)
+slider('g.tf', 0, 8)
+slider('g.size', 0, 100)
+slider('g.x', -10, 10)
+
 colorindex = 1
 
 color1 = {
