@@ -43,6 +43,7 @@ local shaders = {}
 local shaderForName = {}
 local currentShader
 local ffiMat3 = ffi.new 'float[9]'
+local startTime
 
 local function initShader(shader)
   local nparam = gfxlib.getShaderParameterCount(shader.id)
@@ -54,7 +55,6 @@ local function initShader(shader)
   local vartype = ffi.new 'char[256]'
   for i=0,nparam-1 do
     if not gfxlib.getShaderParameterNameAndType(shader.id, i, varname, vartype, ffi.sizeof(varname)) then
-      error 'Error getting list of shader parameters'
     end
     shader.varnames[i] = ffi.string(varname)
     shader.vartypes[i] = ffi.string(vartype)
@@ -304,26 +304,74 @@ end
 
 local kControlPrefix = '\x05'
 local controlHandlers = {}
+local controls = {}
 
-local numberSetters = {}
-local numberGetters = {}
-local lastNumberSent = {}
 
-local function createNumberSetterGetter(name)
-  numberSetters[name] = loadstring('return function(v) ' .. name .. ' = v end')()
-  if not (numberSetters[name]) then
-    error("Failed to create setter for " .. name)
-  end
-
-  numberGetters[name] = loadstring('return ' .. name)
-  if not numberGetters[name] then
-    error("Failed to create getter for " .. name)
+local function createNumberSetter(target)
+  if type(target) == 'string' then
+    local setter = loadstring('return function(v) ' .. target .. ' = tonumber(v) end')()
+    assert(setter, 'failed to create setter')
+    return setter
   end
 end
 
+local function createStringSetter(target)
+  if type(target) == 'string' then
+    local setter = loadstring('return function(v) ' .. target .. ' = tostring(v) end')()
+    assert(setter, 'failed to create setter')
+    return setter
+  end
+end
+
+local function createGetter(target)
+  if type(target) == 'string' then
+    local getter = loadstring('return ' .. target )
+    assert(getter, 'failed to create getter')
+    return getter
+  elseif type(target) == 'function' then
+    return target
+  else
+    error 'invalid target type, must be a function or string'
+  end
+end
+
+local function removeSpaces(str)
+  return str:gsub(' ', '')
+end
+
+local function createControl(target)
+  local name
+  if type(target) == 'string' then
+    name = target
+  elseif type(target) == 'function' then
+    name = removeSpaces(tostring(target))
+  else
+    error('invalid target type, must be a string or funciton')
+  end
+  local control = {}
+  control.getter = createGetter(target)
+  control.numberSetter = createNumberSetter(target)
+  control.stringSetter = createStringSetter(target)
+  control.name = name
+  controls[name] = control
+  return control  
+end
+
+--- Create a slider control. The slider can be used to modify a variable in a running script.
+-- @param target A string containing the target value to modify, eg 'mycircle.diameter'
+-- @param min The lower bound of the slider
+-- @param max The upper bound of the slider
+-- @param initial The initial value of the slider
+-- @usage c = circle()
+-- slider('c.diameter', 0, 10, 0.1)
+-- @see plot
+-- @see combobox
+-- @see editbox
+-- @see checkbox
 function slider(target, min, max, initial)
-  createNumberSetterGetter(target)
-  local value = numberGetters[target]()
+  assert(type(target) == 'string', 'target parameter must be a string')
+  local control = createControl(target)
+  local value = control.getter()
   
   if max and min then
     value = value or (max-min)/2
@@ -348,37 +396,75 @@ function slider(target, min, max, initial)
   assert(max>=min, 'Maximum value must be >= minimum value')
  
   if not initial then
-    initial = numberGetters[target]() or (max-min)/2
+    initial = value or (max-min)/2
   end
   
-  print(kControlPrefix..'numbercontrol '..target..' '..min..' '..max..' '..initial)
+  print(kControlPrefix..'slider '..control.name..' '..min..' '..max..' '..initial)
 end
 
-local function sendControlNumbers()
-  for name, getter in pairs(numberGetters) do
-    local success, value = pcall(getter)
+--- Create a time series plot.
+-- The value of a variable or function will be plotted over time.
+-- @param target A string containing the target variable to plot, eg 'mycircle.diameter'
+-- @usage c = circle()
+-- plot 'c.diameter'
+-- @see slider
+function plot(target)
+  assert(target, 'missing target argument')
+  assert(type(target) == 'string' or type(target) == 'function', 'invalid target type')
+  local control = createControl(target)
+  print(kControlPrefix..'timeseriesplot '.. control.name)
+end
+
+local function sendControlValue(name, value)
+  if type(value) == 'number' then
+    print(kControlPrefix .. 'numbervalue ' .. name .. ' ' .. value)
+  elseif type(value) == 'string' then
+    print(kControlPrefix .. 'stringvalue ' .. name .. ' ' .. value)
+  end
+end
+
+local function sendControlUpdates()
+  for name, control in pairs(controls) do
+    local success, value = pcall(control.getter)
     if not success then
-      warn(string.format("Error while executing getter for %q: %s", name, value))
-      numberGetters[name] = nil
+      warn(string.format("Error while executing getter for %q: %s", tostring(name), value))
+      -- TODO: send message that this control is being deleted
+      controls[name] = nil
     else
-      local lastSent = lastNumberSent[name]
-      if lastSent ~= value then
-        lastSent = value
-        print(kControlPrefix .. 'numbervalue ' .. name .. ' ' .. value)
+      if control.lastSent ~= value then
+        sendControlValue(name, value)
+        control.lastSent = value
       end
     end
   end
+end
+
+function help(target)
+  if target == nil then
+    warn("Usage: help 'keyword'")
+    return
+  end
+
+  assert(type(target) == 'string', 'parameter must be a string')
+  print(kControlPrefix..'help '..target)
+end
+
+local function sendControlData()
+  -- frame info
+  print(kControlPrefix..'frameinfo '..time())
+  
+  sendControlUpdates()
 end
 
 function controlHandlers.numbervalue(params)
   if #params ~= 3 then return end
   local name = params[2]
   local value = tonumber(params[3])
-  if not numberSetters[name] then
-    createNumberSetterGetter(name)
+  local control = controls[name]
+  if control then
+    control.numberSetter(value)
+    control.lastSent = value
   end
-  numberSetters[name](value)
-  lastNumberSent[name]=value
 end
 
 local function handleControlCommand(cmd)
@@ -432,11 +518,14 @@ end
 
 function start()
   assert(type(update) == 'function', 'Missing "update" function, nothing to do')
-
+  startTime = gfxlib.canvasTime()
+  
   while not gfxlib.shouldClose() do
     updateWindowTransform()   -- TODO: only need to call this on window resize callback
     update()
-    sendControlNumbers()
+    sendControlData()
+    io.stdout:flush()
+    io.stderr:flush()
     collectgarbage 'collect'
     gfxlib.swapBuffers()
     pollEvents()
@@ -467,7 +556,7 @@ function mouse()
 end
 
 function time()
-  return gfxlib.canvasTime()
+  return gfxlib.canvasTime() - startTime
 end
 
 function path(svg)

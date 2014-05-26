@@ -4,11 +4,17 @@
 #include <QTextCursor>
 #include <QClipboard>
 #include <QApplication>
+#include <QSettings>
+
 #include <iostream>
+
+// Number of console history entries to save between sessions
+static const int kSavedHistorySize = 50;
 
 Console::Console(QWidget *parent)
     : QPlainTextEdit(parent)
     , m_commandLineReady(false)
+    , m_historyPos(-1)
 {
     QFont f;
 #ifdef Q_OS_LINUX
@@ -39,7 +45,23 @@ Console::Console(QWidget *parent)
 
     m_errorColor = QColor(200, 0, 0);
 
+    // Restore saved history from last session
+    QSettings settings;
+    m_history = settings.value("consoleCommandHistory").toStringList();
+
     prepareCommandLine();
+}
+
+Console::~Console()
+{
+    int numToDelete = m_history.count() - kSavedHistorySize;
+
+    if (numToDelete > 0) {
+        m_history.erase(m_history.begin(), m_history.begin() + m_history.count() - kSavedHistorySize);
+    }
+
+    QSettings settings;
+    settings.setValue("consoleCommandHistory", m_history);
 }
 
 void Console::setPrefix(const QString& prefix) {
@@ -52,6 +74,13 @@ void Console::setPrefixFont(const QFont& f) {
 
 void Console::setPrefixColor(const QColor& c) {
     m_prefixColor = c;
+}
+
+QString Console::currentWord() const
+{
+    QTextCursor cur = textCursor();
+    cur.select(QTextCursor::WordUnderCursor);
+    return cur.selectedText();
 }
 
 bool Console::inCommandLine() const

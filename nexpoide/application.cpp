@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QFileOpenEvent>
 #include <QMessageBox>
+#include <QSettings>
 
 QString appRootPath()
 {
@@ -29,6 +30,10 @@ QString appRootPath()
     return rootDir.absolutePath();
 }
 
+QString nexpoPath() {
+    QSettings settings;
+    return settings.value("nexpoPath", appRootPath()).toString();
+}
 
 void fatalError(const QString& msg)
 {

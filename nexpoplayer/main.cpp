@@ -52,8 +52,6 @@ static std::string getBinaryDirectory() {
 
 const char* cmd = "\"\n"
     "package.path = package.path .. ';' .. nexpoPath .. '?.lua'\n"
-    "io.stdout:setvbuf('no')\n"
-    "io.stderr:setvbuf('no')\n"
     "local libPath=nexpoPath\n"
     "if jit.os == 'Win' then\n"
     "  libPath = libPath .. 'gfxlib.dll'\n"

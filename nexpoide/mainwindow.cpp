@@ -7,6 +7,8 @@
 #include "application.h"
 #include "scriptstatuswidget.h"
 #include "sliderwithspinner.h"
+#include "linkbutton.h"
+#include "timeseriesplot.h"
 
 #include <QFileDialog>
 #include <QSettings>
@@ -20,10 +22,12 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QMimeData>
+#include <QCompleter>
 #include <iostream>
 
 
 static const char kControlPrefix = '\x05';
+// Stylesheet for QToolButtons that appear as hyperlinks
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_updateChecker(0)
     , m_currentEditor(0)
     , m_scriptStatusWidget(0)
+    , m_helpData(0)
 {
     ui->setupUi(this);
 
@@ -50,7 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Add left spacer
     QWidget* spacer1 = new QWidget(this);
-    spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    spacer1->setFixedHeight(0);
     ui->mainToolBar->insertWidget(ui->actionConsole, spacer1);
 
     // Add status widget
@@ -58,10 +64,12 @@ MainWindow::MainWindow(QWidget *parent)
     QAction* scriptStatusAction = ui->mainToolBar->insertWidget(ui->actionConsole, m_scriptStatusWidget);
     scriptStatusAction->setVisible(false);
     connect(this, &MainWindow::scriptRunningChanged, scriptStatusAction, &QAction::setVisible);
+    connect(this, &MainWindow::scriptElapsedChanged, m_scriptStatusWidget, &ScriptStatusWidget::setElapsed);
 
     // Add right spacer
     QWidget* spacer2 = new QWidget(this);
-    spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    spacer2->setFixedHeight(0);
     ui->mainToolBar->insertWidget(ui->actionConsole, spacer2);
 
     // Restore window state
@@ -73,8 +81,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->openTabs->tabBar()->setExpanding(true);
     ui->openTabs->tabBar()->setDrawBase(false);
 
-    // Hide find widget (can't do this in form designer)
+    // Hide find and goto line widgets (can't do this in form designer)
     ui->findWidget->hide();
+    ui->gotoLineWidget->hide();
+
+    // Hide help dock widget
+    ui->helpDockWidget->hide();
+
+    // Init editor static variables (lexers, api)
+    FileEditor::init(this);
+
+    // Load help data (must be done after FileEditor::init)
+    loadHelpData();
 
     // Connect editor changed signal
     connect(this, &MainWindow::currentEditorChanged, this, &MainWindow::onCurrentEditorChanged);
@@ -98,6 +116,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete m_helpData;
 }
 
 // Returns true if all tabs close, false if user cancelled
@@ -110,7 +129,6 @@ bool MainWindow::closeAllTabs()
     }
     return true;
 }
-
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
@@ -143,18 +161,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         }
     }
 
-    // Save open tab list as last session
-    QStringList session;
-    for (int i=0; i<ui->openTabs->count(); i++) {
-        FileEditor* editor = qobject_cast<FileEditor*>(ui->openTabs->widget(i));
-        if (editor && editor->path().size()) {
-            session.append(editor->path());
-        }
-    }
-    if (session.count() > 0) {
-        settings.setValue("lastSession", session);
-        settings.setValue("lastSessionTime", QDateTime::currentDateTime());
-    }
+    saveSession();
 
     // Close all tabs
     if (!closeAllTabs()) {
@@ -170,6 +177,34 @@ void MainWindow::closeEvent(QCloseEvent* event)
     settings.setValue("mainWindowState", saveState());
 }
 
+void MainWindow::focusCurrentEditor()
+{
+    if (currentEditor()) {
+        currentEditor()->setFocus();
+    }
+}
+
+void MainWindow::hideOneInterfaceElement()
+{
+   // Hide one interface element
+    QWidget* widgets[] = {
+        ui->gotoLineWidget,
+        ui->findWidget,
+        ui->helpDockWidget,
+        ui->consoleDockWidget,
+        ui->controlsDockWidget,
+    };
+
+    int n = sizeof(widgets)/sizeof(widgets[0]);
+    for (int i=0; i<n; i++) {
+        if (widgets[i]->isVisible()) {
+            widgets[i]->hide();
+            return;
+        }
+    }
+
+}
+
 void MainWindow::addEditor(FileEditor* editor)
 {
     // Update currentEditor when editor gets focus
@@ -179,13 +214,7 @@ void MainWindow::addEditor(FileEditor* editor)
     connect(editor, &QsciScintilla::cursorPositionChanged, this, &MainWindow::updateStatusBar, Qt::QueuedConnection);
     connect(editor, &QsciScintilla::modificationChanged, this, &MainWindow::updateTabTitles);
     connect(editor, &FileEditor::titleChanged, this, &MainWindow::updateTabTitles);
-    connect(editor, &FileEditor::escapePressed, [=]() {
-       if (ui->consoleDockWidget->isVisible()) {
-           ui->consoleDockWidget->hide();
-       } else if (ui->findWidget->isVisible()) {
-           ui->findWidget->hide();
-       }
-    });
+    connect(editor, &FileEditor::escapePressed, this, &MainWindow::hideOneInterfaceElement);
 
     // clear highlighted text when find box closes
     connect(ui->findLineEdit, &FindLineEdit::hidden, editor, &FileEditor::unhighlightFindText);
@@ -207,6 +236,8 @@ void MainWindow::addEditor(FileEditor* editor)
 
 void MainWindow::loadFile(const QString& path)
 {
+    if (path.size() == 0) return;
+
     QFileInfo info(path);
     if (!info.exists()) return;
 
@@ -224,7 +255,7 @@ void MainWindow::loadFile(const QString& path)
     FileEditor* editor = new FileEditor(this);
 
     if (!editor->open(path)) {
-        std::cerr << "Failed to open " << path.toUtf8().data() << std::endl;
+        std::cerr << "Failed to open " << path.toUtf8().constData() << std::endl;
         delete editor;
         return;
     }
@@ -232,6 +263,7 @@ void MainWindow::loadFile(const QString& path)
     addEditor(editor);
     addRecentFile(editor->path());
     showCentralWidget();
+    saveSession();
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* event)
@@ -465,30 +497,31 @@ void MainWindow::updateRecentFileActions()
         }
     }
 
-    // Stylesheet for QToolButtons that appear as hyperlinks
-    const QString btnStyle = QStringLiteral("QToolButton { background: transparent; border: none; text-decoration: underline; color: blue; font-size: 12pt; } QToolButton QWidget { color: black; font-size: 11pt; }");
-
     // Update actions and create buttons
     QFileIconProvider ip;
     for (int i=0; i<numRecentFiles; i++) {
         QFileInfo info(files[i]);
+        LinkButton* btn = new LinkButton(ui->recentFilesContainer);
 
+        recentFileActions[i]->setVisible(true);
         recentFileActions[i]->setText(files[i]);
         recentFileActions[i]->setData(files[i]);
-        recentFileActions[i]->setToolTip("Open " + info.fileName());
-        recentFileActions[i]->setVisible(true);
 
-
-        QToolButton* btn = new QToolButton(ui->recentFilesContainer);
         btn->setDefaultAction(recentFileActions[i]);
-        if (info.exists()) {
-            btn->setIcon(ip.icon(info));
-        } else {
-            btn->setIcon(QProxyStyle().standardIcon(QStyle::SP_FileIcon));
-        }
-        btn->setStyleSheet(btnStyle);
         btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         btn->setCursor(Qt::PointingHandCursor);
+
+        if (info.exists()) {
+            recentFileActions[i]->setEnabled(true);
+            recentFileActions[i]->setToolTip("Open " + info.fileName());
+            btn->setIcon(ip.icon(info));
+        } else {
+            recentFileActions[i]->setDisabled(true);
+            recentFileActions[i]->setToolTip(info.fileName() + " not found");
+            btn->setIcon(QProxyStyle().standardIcon(QStyle::SP_FileIcon));
+        }
+
+
         ui->recentFilesContainer->layout()->addWidget(btn);
     }
 
@@ -513,11 +546,11 @@ void MainWindow::updateRecentFileActions()
 
         ui->actionRestore_Last_Session->setToolTip(tooltip);
         ui->actionRestore_Last_Session->setEnabled(true);
-        QToolButton* restoreButton = new QToolButton;
+        LinkButton* restoreButton = new LinkButton;
         ui->actionRestore_Last_Session->setText(QString("Restore last session (%1 file%2)")
                                                 .arg(lastSession.count())
                                                 .arg(lastSession.count() == 1 ? "" : "s"));
-        restoreButton->setStyleSheet(btnStyle);
+
         restoreButton->setCursor(Qt::PointingHandCursor);
         restoreButton->setDefaultAction(ui->actionRestore_Last_Session);
         QWidget* spacer = new QWidget(this);
@@ -543,6 +576,26 @@ void MainWindow::addRecentFile(const QString& path)
     }
     settings.setValue("recentFileList", files);
     updateRecentFileActions();
+    saveSession();
+}
+
+void MainWindow::saveSession()
+{
+    QSettings settings;
+
+    // Save open tab list as last session
+    QStringList session;
+    for (int i=0; i<ui->openTabs->count(); i++) {
+        FileEditor* editor = qobject_cast<FileEditor*>(ui->openTabs->widget(i));
+        if (editor && editor->path().size()) {
+            session.append(editor->path());
+        }
+    }
+    if (session.count() > 0) {
+        settings.setValue("lastSession", session);
+        settings.setValue("lastSessionTime", QDateTime::currentDateTime());
+        settings.setValue("lastSessionCurrentFile", currentEditor() ? currentEditor()->path() : QString());
+    }
 }
 
 // TODO: should be tristate: saved, not saved, cancelled?
@@ -554,7 +607,7 @@ bool MainWindow::editorSaveAs(FileEditor* editor)
 
     QString savePath = editor->path();
     QSettings settings;
-    std::cerr << settings.value("lastSavePath").toString().toUtf8().data() << std::endl;
+    std::cerr << settings.value("lastSavePath").toString().toUtf8().constData() << std::endl;
     bool isNexpoExtension = true;
     if (savePath.size()) {
         // Check file extension
@@ -577,7 +630,7 @@ bool MainWindow::editorSaveAs(FileEditor* editor)
     settings.setValue("lastSavePath", info.absolutePath());
 
     if (!editor->saveFileAs(fileName)) {
-        std::cerr << "Failed to save " << info.absoluteFilePath().toUtf8().data() << std::endl;
+        std::cerr << "Failed to save " << info.absoluteFilePath().toUtf8().constData() << std::endl;
         return false;
     } else {
         addRecentFile(editor->path());
@@ -594,7 +647,7 @@ bool MainWindow::editorSave(FileEditor* editor)
     }
 
     if (!editor->saveFile()) {
-        std::cerr << "Failed to save " << editor->path().toUtf8().data() << std::endl;
+        std::cerr << "Failed to save " << editor->path().toUtf8().constData() << std::endl;
         return false;
     } else {
         addRecentFile(editor->path());
@@ -613,10 +666,6 @@ void MainWindow::on_actionSave_As_triggered()
 }
 
 
-QString MainWindow::nexpoPath() {
-    QSettings settings;
-    return settings.value("nexpoPath", appRootPath()).toString();
-}
 
 void MainWindow::startScriptProcess()
 {
@@ -654,6 +703,12 @@ void MainWindow::startScriptProcess()
     m_scriptProcess->start(playerPath);
 }
 
+void MainWindow::setFrameInfo(const QByteArray& elapsed)
+{
+    m_scriptElapsed = elapsed.toDouble();
+    emit scriptElapsedChanged(m_scriptElapsed);
+}
+
 void MainWindow::handleControlCommand(QByteArray cmd)
 {
     int opLen = cmd.indexOf(' ');
@@ -677,22 +732,17 @@ void MainWindow::handleControlCommand(QByteArray cmd)
         controls_setNumberValue(params[0], params[1]);
     } else if (op == QByteArrayLiteral("stringvalue")) {
         controls_setStringValue(params[0], QByteArray::fromHex(params[1]));
-    } else if (op == QByteArrayLiteral("numbercontrol")) {
-        controls_createNumberControl(params[0], params[1], params[2], params[3]);
+    } else if (op == QByteArrayLiteral("slider")) {
+        controls_createSlider(params[0], params[1], params[2], params[3]);
+    } else if (op == QByteArrayLiteral("checkbox")) {
+        controls_createCheckbox(params[0], params[1]);
+    } else if (op == QByteArrayLiteral("timeseriesplot")) {
+        controls_createTimeSeriesPlot(params[0]);
+    } else if (op == QByteArrayLiteral("frameinfo")) {
+         setFrameInfo(params[0]);
+    } else if (op == QByteArrayLiteral("help")) {
+        showHelp(params[0]);
     }
-}
-
-// Look up a control by name
-int MainWindow::rowForControl(const QString& name) const
-{
-    for (int i=0; i<ui->controlsLayout->rowCount(); i++) {
-        QLayoutItem* item = ui->controlsLayout->itemAt(i, QFormLayout::FieldRole);
-        if (item) {
-            QWidget* widget = item->widget();
-            if (widget && widget->objectName() == name) return i;
-        }
-    }
-    return -1;
 }
 
 void MainWindow::clearControls()
@@ -724,15 +774,198 @@ void MainWindow::numberControlValueChanged(double value)
     sendControlCommand(QByteArrayLiteral("numbervalue"), widget->objectName().toUtf8(), QByteArray::number(value));
 }
 
-void MainWindow::controls_createNumberControl(const QByteArray& name, const QByteArray& minValueString,
+void MainWindow::loadHelpData()
+{
+    // Hide all widgets in help dock
+    for (int i=0; i<ui->helpLayout->count(); i++) {
+        QWidget* widget = ui->helpLayout->itemAt(i)->widget();
+        if (widget != ui->helpSearchBox) widget->hide();
+    }
+
+    // Load json help
+    QString path = QString("%1/lib/help.json").arg(nexpoPath());
+    QFileInfo info(path);
+    if (!info.exists()) {
+        std::cerr << "Help file not found at " << path.toUtf8().constData() << std::endl;
+        return;
+    }
+    QFile file(path);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        std::cerr << "Help not loaded: failed to open " << path.toUtf8().constData() << std::endl;
+        return;
+    }
+    QByteArray json = file.readAll();
+    file.close();
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(json, &err);
+    if (!doc.isObject()) {
+        std::cerr << "Error parsing help file: " << err.errorString().toUtf8().constData() << std::endl;
+        return;
+    }
+    m_helpData = new QJsonObject(doc.object());
+
+    // Create completer for help search box and APIs for editor
+    QStringList targets;
+    for (auto p = m_helpData->constBegin(); p != m_helpData->constEnd(); p++) {
+        // Add name to completion list
+        QJsonObject obj = p.value().toObject();
+        QString name = obj.value("name").toString();
+        if (name.size() > 0) {
+            targets.append(name);
+        }
+
+        // Add name(param1, param2) to api entries
+        QStringList paramlist;
+        QJsonArray params = obj.value("pnames").toArray();
+        for (int i=0; i<params.size(); i++) {
+            QString param = params[i].toString();
+            if (param.size()) paramlist.append(param);
+        }
+        QString entry = name + "(" + paramlist.join(", ") + ")";
+        FileEditor::addApiEntry(entry);
+    }
+
+    // Set completer
+    QCompleter* completer = new QCompleter(targets, this);
+    ui->helpSearchBox->setCompleter(completer);
+
+    // Prepare apis
+    FileEditor::prepareApi();
+
+
+}
+
+bool MainWindow::showHelp(const QString& str)
+{
+    QString target = str.trimmed().toLower();
+    if (target.size() == 0) return false;
+
+    // Get help table for this string
+    if (m_helpData == 0) return false;
+    QJsonValue helpValue = m_helpData->value(target);
+    if (!helpValue.isObject()) {
+        std::cerr << "No help available for " << target.toUtf8().constData() << std::endl;
+        return false;
+    }
+    QJsonObject help = helpValue.toObject();
+
+    // Summary
+    QString summary = help.value("summary").toString();
+    if (summary.size() > 0) {
+        ui->helpSummary->setText(summary);
+        ui->helpSummary->show();
+    } else {
+        ui->helpSummary->hide();
+    }
+
+    // Parameters
+    QJsonArray pnames = help.value("pnames").toArray();
+    QJsonArray pdesc = help.value("pdesc").toArray();
+    QString paramlist;
+    // Clear old params
+    while (ui->helpParametersLayout->count() > 0) {
+        delete ui->helpParametersLayout->itemAt(0)->widget();
+    }
+    int nparam = qMin(pnames.size(), pdesc.size());
+    if (nparam > 0) {
+        for (int i=0; i<nparam; i++) {
+            QLabel* desc = new QLabel;
+            desc->setText(pdesc[i].toString());
+            desc->setWordWrap(true);
+            ui->helpParametersLayout->addRow(pnames[i].toString(), desc);
+            ((QLabel*)(ui->helpParametersLayout->labelForField(desc)))->setAlignment(Qt::AlignTop);
+            if (paramlist.size() > 0) paramlist += ", ";
+            paramlist += pnames[i].toString();
+        }
+        ui->helpParametersContainer->show();
+    } else {
+        ui->helpParametersContainer->hide();
+    }
+
+    // Name
+    QString name = help.value("name").toString();
+    ui->helpTitle->setText(name + "(" + paramlist + ")");
+    ui->helpTitle->setVisible(name.size() > 0);
+
+    // Description
+    QString desc = help.value("description").toString();
+    if (desc.startsWith((summary))) {
+        desc = desc.mid(summary.size()).trimmed();
+    }
+    if (desc.size() > 0 && desc != summary) {
+        ui->helpDescription->setText(desc);
+        ui->helpDescription->show();
+    } else {
+        ui->helpDescription->hide();
+    }
+
+    // Example
+    QString example = help.value("usage").toString();
+    if (example.size() > 0) {
+        ui->helpExample->setText(example);
+        ui->helpExampleRow->show();
+    } else {
+        ui->helpExampleRow->hide();
+    }
+
+    // See
+    QJsonArray see = help.value("see").toArray();
+    if (see.count() > 0) {
+        // Clear old buttons
+        while (ui->helpSeeLayout->count() > 0) {
+            delete ui->helpSeeLayout->itemAt(0)->widget();
+        }
+
+        // Add new buttons
+        for (int i=0; i<see.count(); i++) {
+            QString seeTarget = see[i].toString();
+            if (seeTarget.size() > 0) {
+                LinkButton* btn = new LinkButton;
+                btn->setCursor(Qt::PointingHandCursor);
+                QAction* action = new QAction(btn);
+                action->setText(seeTarget);
+                action->setData(seeTarget);
+                action->setToolTip("Show help for “" + seeTarget + "”");
+                connect(action, &QAction::triggered, this, &MainWindow::helpActionTriggered);
+                btn->setDefaultAction(action);
+                ui->helpSeeLayout->addWidget(btn);
+            }
+        }
+    }
+    ui->helpSeeRow->setVisible(ui->helpSeeLayout->count() > 0);
+
+    // Show help panel
+    ui->helpDockWidget->show();
+    return true;
+}
+
+void MainWindow::helpActionTriggered()
+{
+    QAction* action = qobject_cast<QAction*> (sender());
+    if (action) {
+        showHelp(action->data().toString());
+    }
+}
+
+void MainWindow::deleteControl(const QString& name, int type) {
+    for (int i=0; i<ui->controlsLayout->rowCount(); i++) {
+        QLayoutItem* item = ui->controlsLayout->itemAt(i, QFormLayout::FieldRole);
+        if (item) {
+            Control* oldSlider = qobject_cast<Control*>(item->widget());
+            if (oldSlider && oldSlider->type() == type && oldSlider->objectName() == name) {
+                delete item->widget();
+                QLayoutItem* labelItem = ui->controlsLayout->itemAt(i, QFormLayout::LabelRole);
+                if (labelItem) delete labelItem->widget();
+            }
+        }
+    }
+}
+
+void MainWindow::controls_createSlider(const QByteArray& name, const QByteArray& minValueString,
                                               const QByteArray& maxValueString, const QByteArray& initialValueString)
 {
-    // Delete old control if it exists
-    int oldRow = rowForControl(name);
-    if (oldRow >= 0) {
-        delete ui->controlsLayout->itemAt(oldRow, QFormLayout::LabelRole)->widget();
-        delete ui->controlsLayout->itemAt(oldRow, QFormLayout::FieldRole)->widget();
-    }
+    // Delete old slider if it exists
+    deleteControl(name, Control::Slider);
 
     bool ok;
     double minValue = minValueString.toDouble(&ok);
@@ -743,10 +976,10 @@ void MainWindow::controls_createNumberControl(const QByteArray& name, const QByt
     if (!ok) return;
 
     SliderWithSpinner* widget = new SliderWithSpinner;
+    widget->setObjectName(name);
     widget->setMinValue(minValue);
     widget->setMaxValue(maxValue);
     widget->setValue(initialValue);
-    widget->setObjectName(name);
     connect(widget, &SliderWithSpinner::valueChanged, this, &MainWindow::numberControlValueChanged);
     QLabel* label = new QLabel;
     label->setText(name);
@@ -759,15 +992,46 @@ void MainWindow::controls_setNumberValue(const QByteArray& name, const QByteArra
     bool ok;
     double value = valueString.toDouble(&ok);
     if (!ok) return;
-    int row = rowForControl(name);
-    if (row < 0) return;
-    QWidget* widget = ui->controlsLayout->itemAt(row, QFormLayout::FieldRole)->widget();
-    SliderWithSpinner* slider = qobject_cast<SliderWithSpinner*> (widget);
-    if (slider) slider->setValue(value);
 
+    // Note: there could be multiple controls with the same name
+    for (int row=0; row<ui->controlsLayout->rowCount(); row++) {
+        QLayoutItem* item = ui->controlsLayout->itemAt(row, QFormLayout::FieldRole);
+        if (!item) continue;
+        Control* control = qobject_cast<Control*> (item->widget());
+
+        if (control->objectName() == name) {
+            switch (control->type())
+            {
+            case Control::Slider:
+                (qobject_cast<SliderWithSpinner*> (control))->setValue(value);
+                break;
+            case Control::TimeSeriesPlot:
+                (qobject_cast<TimeSeriesPlot*> (control))->addValue(value);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
+void MainWindow::controls_createTimeSeriesPlot(const QByteArray &name)
+{
+    TimeSeriesPlot* plot = new TimeSeriesPlot;
+    plot->setObjectName(name);
+    plot->setTitle(name);
+    plot->setWindowSize(200);
+    //ui->controlsLayout->setWidget(ui->controlsLayout->rowCount(), QFormLayout::SpanningRole, plot);
+    ui->controlsLayout->addRow(plot);
+    ui->controlsDockWidget->show();
 }
 
 void MainWindow::controls_setStringValue(const QByteArray &, const QByteArray &)
+{
+
+}
+
+void MainWindow::controls_createCheckbox(const QByteArray& name, const QByteArray& checked)
 {
 
 }
@@ -841,7 +1105,7 @@ void MainWindow::runScript(const QString& scriptPath)
     // Check script exists
     QFileInfo scriptInfo(scriptPath);
     if (!scriptInfo.exists()) {
-        std::cerr << "Error: file not found " << scriptPath.toUtf8().data() << std::endl;
+        std::cerr << "Error: file not found " << scriptPath.toUtf8().constData() << std::endl;
     }
 
     if (m_scriptProcess) {
@@ -852,7 +1116,8 @@ void MainWindow::runScript(const QString& scriptPath)
         m_scriptRunning = true;
         m_scriptStartTime = QDateTime::currentMSecsSinceEpoch();
         m_scriptStatusWidget->setName(scriptInfo.fileName());
-        m_scriptStatusWidget->setStartTime(QDateTime::currentDateTime().toString("h:m:s ap"));
+        m_scriptElapsed = 0;
+        emit scriptElapsedChanged(m_scriptElapsed);
         emit scriptRunningChanged(m_scriptRunning);
         setStopAndRun();
     }
@@ -953,6 +1218,7 @@ void MainWindow::onCurrentEditorChanged(FileEditor* editor)
         }
     } else {
         setWindowTitle(qApp->applicationDisplayName());
+        setWindowFilePath(QString());
     }
 }
 
@@ -992,7 +1258,7 @@ void MainWindow::setupWelcomeWidget()
         for (int i=0; i<files.count(); i++) {
             QFileInfo info = files[i];
             if (info.suffix().compare("nexpo", Qt::CaseInsensitive) == 0) {
-                QToolButton* btn = new QToolButton(ui->examplesContainer);
+                LinkButton* btn = new LinkButton(ui->examplesContainer);
                 QAction* action = new QAction(btn);
                 action->setData(info.absoluteFilePath());
                 action->setText(info.fileName());
@@ -1001,7 +1267,6 @@ void MainWindow::setupWelcomeWidget()
                 ui->menuOpen_Example->addAction(action);
                 btn->setDefaultAction(action);
                 btn->setIcon(ip.icon(info));
-                btn->setStyleSheet("QToolButton { background: transparent; border: none; text-decoration: underline; color: blue; font-size: 12pt;}");
                 btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
                 btn->setCursor(Qt::PointingHandCursor);
                 ui->examplesContainer->layout()->addWidget(btn);
@@ -1019,7 +1284,8 @@ void MainWindow::on_actionFind_triggered()
 {
     if (ui->openTabs->count() == 0) return;
 
-    ui->findWidget->setVisible(true);
+    ui->findWidget->show();
+    ui->gotoLineWidget->hide();
     ui->findLineEdit->setFocus();
     ui->findLineEdit->selectAll();
 }
@@ -1077,6 +1343,7 @@ void MainWindow::on_actionPaste_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
     AboutForm* about = new AboutForm(this);
+    about->setAttribute(Qt::WA_DeleteOnClose, true);
     about->show();
 }
 
@@ -1114,7 +1381,66 @@ void MainWindow::on_actionRestore_Last_Session_triggered()
 {
     QSettings settings;
     QStringList session = settings.value("lastSession").toStringList();
+    QString currentFile = settings.value("lastSessionCurrentFile").toString();
+
     for (int i=0; i<session.count(); i++) {
         loadFile(session[i]);
+    }
+    loadFile(currentFile);      // will make tab active
+}
+
+void MainWindow::on_gotoLineValue_editingFinished()
+{
+    if (ui->gotoLineValue->hasFocus()) {
+        if (currentEditor()) {
+            int line = ui->gotoLineValue->value();
+            if (line < 1 || line > currentEditor()->lines()) {
+                // invalid line, ignore but don't hide widget
+                return;
+            }
+            // scroll to end first then scroll to line
+            // that way the cursor is at the top of the screen
+            currentEditor()->setCursorPosition(currentEditor()->lines(), 0);
+            currentEditor()->setCursorPosition(line-1, 0);
+            currentEditor()->ensureCursorVisible();
+
+        }
+    }
+    ui->gotoLineWidget->hide();
+}
+
+void MainWindow::on_actionGo_To_Line_triggered()
+{
+    if (currentEditor()) {
+        int line, index;
+        currentEditor()->getCursorPosition(&line, &index);
+        ui->gotoLineValue->setValue(line+1);
+        ui->findWidget->hide();
+        ui->gotoLineWidget->show();
+        ui->gotoLineValue->setFocus();
+        ui->gotoLineValue->selectAll();
+    }
+}
+
+void MainWindow::on_actionHelp_triggered()
+{
+    if (currentEditor() && currentEditor()->hasFocus()) {
+        int line, index;
+        currentEditor()->getCursorPosition(&line, &index);
+        QString word = currentEditor()->wordAtLineIndex(line, index);
+        showHelp(word);
+    } else if (ui->console->hasFocus()) {
+        showHelp(ui->console->currentWord());
+    } else {
+        ui->helpDockWidget->show();
+        ui->helpSearchBox->setFocus();
+        ui->helpSearchBox->selectAll();
+    }
+}
+
+void MainWindow::on_helpSearchBox_returnPressed()
+{
+    if (showHelp(ui->helpSearchBox->text())) {
+        ui->helpSearchBox->selectAll();
     }
 }

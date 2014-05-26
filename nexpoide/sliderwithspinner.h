@@ -1,13 +1,13 @@
 #ifndef SLIDERWITHSPINNER_H
 #define SLIDERWITHSPINNER_H
 
-#include <QWidget>
+#include "control.h"
 
 namespace Ui {
 class SliderWithSpinner;
 }
 
-class SliderWithSpinner : public QWidget
+class SliderWithSpinner : public Control
 {
     Q_OBJECT
     Q_PROPERTY(double minValue READ minValue WRITE setMinValue)
@@ -27,6 +27,8 @@ public:
     {
         return m_value;
     }
+
+    ControlType type() const { return ControlType::Slider; }
 
 public slots:
     void setMinValue(double arg);

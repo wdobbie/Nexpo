@@ -17,7 +17,7 @@ public:
 
 public slots:
     void setName(const QString&);
-    void setStartTime(const QString&);
+    void setElapsed(double);
 
 private:
     Ui::ScriptStatusWidget *ui;

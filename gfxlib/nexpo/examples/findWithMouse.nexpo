@@ -29,7 +29,8 @@ slider('g.rotation', 0, 360)
 slider('g.style.sf', 0, 16)
 slider('g.tf', 0, 8)
 slider('g.size', 0, 100)
-slider('g.x', -10, 10)
+slider('g.x', -20, 20)
+slider('g.y', -20, 20)
 
 colorindex = 1
 

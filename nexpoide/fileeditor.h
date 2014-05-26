@@ -3,10 +3,15 @@
 
 #include <Qsci/qsciscintilla.h>
 
-//#include <Qsci/qsciapis.h>
-
 class QFileInfo;
 class QKeyEvent;
+class QsciAPIs;
+class QsciLexer;
+class QsciLexerLua;
+class QsciLexerCPP;
+class QsciLexerMatlab;
+class QsciLexerJavaScript;
+class QsciLexerHTML;
 
 struct EditorPosition {
     int line, index, hscroll, vscroll;
@@ -24,6 +29,10 @@ public:
     QString title() const;
     void setTitle(const QString&);
     QString path() const;
+
+    static void init(QObject* parent);
+    static void addApiEntry(const QString&);
+    static void prepareApi();
 
 signals:
     void titleChanged(const QString&);
@@ -50,6 +59,14 @@ private:
     void installLexer(const QString&);
     void setFileInfo(const QFileInfo* info);
 
+    static QsciLexer* lexerForExtension(const QString& suffix);
+
+    static QsciAPIs* s_apis;
+    static QsciLexerLua* s_lexLua;
+    static QsciLexerCPP* s_lexCpp;
+    static QsciLexerMatlab* s_lexMatlab;
+    static QsciLexerJavaScript* s_lexJs;
+    static QsciLexerHTML* s_lexHtml;
 
     QString m_dir;
     QString m_title;

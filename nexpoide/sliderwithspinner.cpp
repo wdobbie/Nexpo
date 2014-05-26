@@ -2,7 +2,7 @@
 #include "ui_sliderwithspinner.h"
 
 SliderWithSpinner::SliderWithSpinner(QWidget *parent)
-    : QWidget(parent)
+    : Control(parent)
     , ui(new Ui::SliderWithSpinner)
     , m_minValue(0)
     , m_maxValue(1)

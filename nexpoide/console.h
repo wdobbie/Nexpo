@@ -9,10 +9,12 @@ class Console : public QPlainTextEdit
     Q_OBJECT
 public:
     explicit Console(QWidget *parent = 0);
+    ~Console();
 
     void setPrefix(const QString&);
     void setPrefixFont(const QFont&);
     void setPrefixColor(const QColor&);
+    QString currentWord() const;
 
 signals:
     void command(const QByteArray&);

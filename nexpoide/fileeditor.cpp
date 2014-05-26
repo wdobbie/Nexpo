@@ -25,29 +25,12 @@
 #include <Qsci/qscilexermatlab.h>
 #include <iostream>
 
-//#include "application.h"
-//#include "mainwindow.h"
-//#include "settings.h"
-//#include "editorfindbox.h"
-//#include "ctypes.h"
-
-// ------------------------------------------------------------
-// Lexers and API
-// ------------------------------------------------------------
-
-//static QsciAPIs* gApi;
-static QsciLexerLua* gLexLua;
-static QsciLexerCPP* gLexCpp;
-static QsciLexerMatlab* gLexMatlab;
-static QsciLexerJavaScript* gLexJs;
-static QsciLexerHTML* gLexHtml;
-static bool gLexerDoneInit = false;
-
-/*
-QString getPreparedApiPath() {
-    return gApp->applicationRootPath() + "/base/apis.dat";
-}
-*/
+QsciAPIs* FileEditor::s_apis;
+QsciLexerLua* FileEditor::s_lexLua;
+QsciLexerCPP* FileEditor::s_lexCpp;
+QsciLexerMatlab* FileEditor::s_lexMatlab;
+QsciLexerJavaScript* FileEditor::s_lexJs;
+QsciLexerHTML* FileEditor::s_lexHtml;
 
 QFont getEditorFont()
 {
@@ -64,35 +47,28 @@ QFont getEditorFont()
     return font;
 }
 
-void setLexerStyle(QsciLexer* lex) {
+void setupLexer(QsciLexer* lex) {
     lex->setFont(getEditorFont());
     lex->setAutoIndentStyle(QsciScintilla::AiMaintain | QsciScintilla::AiOpening | QsciScintilla::AiClosing);
 }
 
-void initLexers()
+void FileEditor::init(QObject* parent)
 {
-    if (gLexerDoneInit) return;
-
     // Lexers
-    gLexLua = new QsciLexerLua;
-    gLexCpp = new QsciLexerCPP;
-    gLexMatlab = new QsciLexerMatlab;
-    gLexJs = new QsciLexerJavaScript;
-    gLexHtml = new QsciLexerHTML;
+    s_lexLua = new QsciLexerLua(parent);
+    s_lexCpp = new QsciLexerCPP(parent);
+    s_lexMatlab = new QsciLexerMatlab(parent);
+    s_lexJs = new QsciLexerJavaScript(parent);
+    s_lexHtml = new QsciLexerHTML(parent);
 
-    setLexerStyle(gLexLua);
-    setLexerStyle(gLexCpp);
-    setLexerStyle(gLexMatlab);
-    setLexerStyle(gLexJs);
-    setLexerStyle(gLexHtml);
+    // APIs
+    s_apis = new QsciAPIs(s_lexLua);
 
-    /*
-    // Api
-    gApi = new QsciAPIs(gLexLua);
-    if (!gApi->loadPrepared(getPreparedApiPath())) {
-        qDebug() << "initLexers: Failed to load prepared api in file" << getPreparedApiPath();
-    }
-    */
+    setupLexer(s_lexLua);
+    setupLexer(s_lexCpp);
+    setupLexer(s_lexMatlab);
+    setupLexer(s_lexJs);
+    setupLexer(s_lexHtml);
 
     QFont font = getEditorFont();
     QFont bold(font);
@@ -101,75 +77,73 @@ void initLexers()
     italic.setItalic(true);
 
     // 1=comment, 2=line comment
-    gLexLua->setFont(italic, 1);
-    gLexLua->setColor(Qt::gray, 1);
-    gLexLua->setPaper(Qt::white, 1);
+    s_lexLua->setFont(italic, 1);
+    s_lexLua->setColor(Qt::gray, 1);
+    s_lexLua->setPaper(Qt::white, 1);
 
     // 2=multi-line comment
-    gLexLua->setFont(italic, 2);
-    gLexLua->setColor(Qt::gray, 2);
-    gLexLua->setPaper(Qt::white, 2);
+    s_lexLua->setFont(italic, 2);
+    s_lexLua->setColor(Qt::gray, 2);
+    s_lexLua->setPaper(Qt::white, 2);
 
     // 4=number
-    gLexLua->setColor(Qt::darkRed, 4);
+    s_lexLua->setColor(Qt::darkRed, 4);
 
     // 5=keyword
-    gLexLua->setColor(Qt::blue, 6);
-    gLexLua->setFont(bold, 5);
+    s_lexLua->setColor(Qt::blue, 6);
+    s_lexLua->setFont(bold, 5);
 
     // 6=double quote string
-    gLexLua->setColor(Qt::darkGreen, 6);
+    s_lexLua->setColor(Qt::darkGreen, 6);
 
     // 7=single quote string
-    gLexLua->setColor(Qt::darkGreen, 7);
+    s_lexLua->setColor(Qt::darkGreen, 7);
 
     // 8=double bracket string
-    gLexLua->setColor(Qt::darkGreen, 8);
-    gLexLua->setPaper(Qt::white, 8);
+    s_lexLua->setColor(Qt::darkGreen, 8);
+    s_lexLua->setPaper(Qt::white, 8);
 
     // 9=preprocessor
-    gLexLua->setPaper(Qt::cyan, 9);
+    s_lexLua->setPaper(Qt::cyan, 9);
 
     // 10=operator
-    gLexLua->setColor(QColor(128, 0, 128), 10);
+    s_lexLua->setColor(QColor(128, 0, 128), 10);
 
     // 11=identifier
-    gLexLua->setColor(Qt::black, 11);
+    s_lexLua->setColor(Qt::black, 11);
 
     // 12=Unclosed string
-    gLexLua->setColor(Qt::darkGreen, 12);
-    gLexLua->setPaper(Qt::white, 12);
-    gLexLua->setFont(italic, 12);
+    s_lexLua->setColor(Qt::darkGreen, 12);
+    s_lexLua->setPaper(Qt::white, 12);
+    s_lexLua->setFont(italic, 12);
 
     // 13=basic functions
-    gLexLua->setPaper(Qt::white, 13);
+    s_lexLua->setPaper(Qt::white, 13);
 
     // 14=string, table, maths functions
-    gLexLua->setPaper(Qt::white, 14);
+    s_lexLua->setPaper(Qt::white, 14);
 
     // 15=coroutine, i/o and system facilities
-    gLexLua->setPaper(Qt::white, 15);
+    s_lexLua->setPaper(Qt::white, 15);
 
     // 16-19=user defined
-    gLexLua->setPaper(Qt::red, 16);
-    gLexLua->setPaper(Qt::green, 17);
-    gLexLua->setPaper(Qt::yellow, 18);
-    gLexLua->setPaper(Qt::gray, 19);
+    s_lexLua->setPaper(Qt::red, 16);
+    s_lexLua->setPaper(Qt::green, 17);
+    s_lexLua->setPaper(Qt::yellow, 18);
+    s_lexLua->setPaper(Qt::gray, 19);
 
     // 20=label
-    gLexLua->setPaper(QColor(0, 128, 128), 20);
+    s_lexLua->setPaper(QColor(0, 128, 128), 20);
 
-    gLexerDoneInit = true;
 }
 
 
-QsciLexer* lexerForExtension(const QString& suffix) {
-    initLexers();
-
+QsciLexer* FileEditor::lexerForExtension(const QString& suffix)
+{
     if (suffix.compare("html", Qt::CaseInsensitive) == 0 ||
         suffix.compare("htm", Qt::CaseInsensitive) == 0)
     {
-        return gLexHtml;
+        return s_lexHtml;
     }
     else if (suffix.compare("vert", Qt::CaseInsensitive) == 0 ||
                suffix.compare("frag", Qt::CaseInsensitive) == 0 ||
@@ -181,20 +155,20 @@ QsciLexer* lexerForExtension(const QString& suffix) {
                suffix.compare("h", Qt::CaseInsensitive) == 0 ||
                suffix.compare("hpp", Qt::CaseInsensitive) == 0)
     {
-        return gLexCpp;
+        return s_lexCpp;
     }
     else if (suffix.compare("js", Qt::CaseInsensitive) == 0 ||
              suffix.compare("json", Qt::CaseInsensitive) == 0)
     {
-        return gLexJs;
+        return s_lexJs;
     }
     else if (suffix.compare("m", Qt::CaseInsensitive) == 0) {
-        return gLexMatlab;
+        return s_lexMatlab;
     }
     else if (suffix.compare("lua", Qt::CaseInsensitive) == 0 ||
              suffix.compare("nexpo", Qt::CaseInsensitive) == 0)
     {
-        return gLexLua;
+        return s_lexLua;
     }
     else {
         return 0;
@@ -209,7 +183,7 @@ QsciLexer* lexerForExtension(const QString& suffix) {
 LUAEXPORT(const char* getLuaLexerStyleDescription(int style))
 {
     initLexers();
-    return tempString(gLexLua->description(style));
+    return tempString(s_lexLua->description(style));
 }
 
 LUAEXPORT(void addApiEntry(const char* entry)) {
@@ -242,9 +216,9 @@ LUAEXPORT(void setLuaLexerFont(const char* desc, int style))
         return;
     }
 
-    gLexLua->setFont(font, style);
+    s_lexLua->setFont(font, style);
     if (style < 0) {
-        gLexLua->setDefaultFont(font);
+        s_lexLua->setDefaultFont(font);
     }
 }
 
@@ -253,9 +227,9 @@ LUAEXPORT(void setLuaLexerColor(const vec4* col, int style))
     initLexers();
     QColor color;
     color.setRgbF(col->x, col->y, col->z, col->w);
-    gLexLua->setColor(color, style);
+    s_lexLua->setColor(color, style);
     if (style < 0) {
-        gLexLua->setDefaultColor(color);
+        s_lexLua->setDefaultColor(color);
     }
 }
 
@@ -263,9 +237,9 @@ LUAEXPORT(void setLuaLexerBgColor(const vec4* col, int style)) {
     initLexers();
     QColor color;
     color.setRgbF(col->x, col->y, col->z, col->w);
-    gLexLua->setPaper(color, style);
+    s_lexLua->setPaper(color, style);
     if (style < 0) {
-        gLexLua->setDefaultPaper(color);
+        s_lexLua->setDefaultPaper(color);
     }
 }
 
@@ -534,7 +508,6 @@ void FileEditor::installLexer(const QString& suffix)
 {
     // Get lexer for this file
     QsciLexer* lex = lexerForExtension(suffix);
-    if (lex == lexer()) return;
 
     // Set lexer style and apply it to editor
     //lex->setParent(this);
@@ -568,17 +541,14 @@ void FileEditor::installLexer(const QString& suffix)
     setTabIndents(true);
     setIndentationGuidesForegroundColor(Qt::lightGray);
     setBraceMatching(QsciScintilla::SloppyBraceMatch);
-    setMatchedBraceBackgroundColor(QColor::fromRgbF(.3, .847, .302, 1));
-    setMatchedBraceForegroundColor(Qt::white);
-    setUnmatchedBraceBackgroundColor(QColor::fromRgbF(.880, .302, .147, 1));
-    setUnmatchedBraceForegroundColor(Qt::white);
+    setMatchedBraceBackgroundColor(QColor::fromRgbF(.8, 1, 0.8, 1));
+    setMatchedBraceForegroundColor(Qt::black);
+    setUnmatchedBraceBackgroundColor(QColor::fromRgbF(1, 0.8, 0.8, 1));
+    setUnmatchedBraceForegroundColor(Qt::black);
 
     setWrapMode(QsciScintilla::WrapWord);
     setWrapIndentMode(QsciScintilla::WrapIndentSame);
     setFrameShape(QFrame::NoFrame);
-    //setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
-    //this->setLineWidth(2);
-    //this->setContentsMargins(2, 0, 0, 0);
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -634,6 +604,20 @@ QString FileEditor::path() const
         return m_dir + "/" + m_title;
     } else {
         return QString();
+    }
+}
+
+void FileEditor::addApiEntry(const QString& entry)
+{
+    if (s_apis) {
+        s_apis->add(entry);
+    }
+}
+
+void FileEditor::prepareApi()
+{
+    if (s_apis) {
+        s_apis->prepare();
     }
 }
 

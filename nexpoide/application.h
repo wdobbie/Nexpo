@@ -4,6 +4,7 @@
 #include <QApplication>
 
 QString appRootPath();
+QString nexpoPath();
 void fatalError(const QString& msg);
 
 class MainWindow;

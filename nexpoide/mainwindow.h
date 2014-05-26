@@ -13,6 +13,7 @@ class OutputRedirector;
 class FileEditor;
 class UpdateChecker;
 class ScriptStatusWidget;
+class QJsonObject;
 
 class MainWindow : public QMainWindow
 {
@@ -40,10 +41,19 @@ public slots:
     void updateCurrentEditor();
     void onCurrentEditorChanged(FileEditor*);
     void numberControlValueChanged(double value);
+    bool showHelp(const QString&);
+    void helpActionTriggered();
+    void hideOneInterfaceElement();
+    void focusCurrentEditor();
 
 signals:
     void scriptRunningChanged(bool);
+    void scriptElapsedChanged(double);
     void currentEditorChanged(FileEditor*);
+
+    void controls_updateNumberValue(const QString&, double);
+    void controls_udpateStringValue(const QString&, const QString&);
+    void controls_updateBooleanValue(const QString&, bool);
 
 private slots:
     void on_actionNew_triggered();
@@ -96,6 +106,14 @@ private slots:
 
     void on_actionRestore_Last_Session_triggered();
 
+    void on_gotoLineValue_editingFinished();
+
+    void on_actionGo_To_Line_triggered();
+
+    void on_actionHelp_triggered();
+
+    void on_helpSearchBox_returnPressed();
+
 protected:
     virtual void closeEvent(QCloseEvent*);
     void dragEnterEvent(QDragEnterEvent* event);
@@ -117,30 +135,38 @@ private:
     QProcess* m_scriptProcess;
     QString m_runningScriptPath;
     qint64 m_scriptStartTime;
+    double m_scriptElapsed;
+
     UpdateChecker* m_updateChecker;
     FileEditor* m_currentEditor;
     ScriptStatusWidget* m_scriptStatusWidget;
+    QJsonObject* m_helpData;
 
     void startScriptProcess();
     void addRecentFile(const QString& path);
+    void saveSession();
     void setStopAndRun();
     void addEditor(FileEditor* editor);
     void showCentralWidget();
     void setupWelcomeWidget();
-    QString nexpoPath();
     bool editorSave(FileEditor*);
     bool editorSaveAs(FileEditor*);
     bool closeTab(int);
     bool closeAllTabs();
+    void setFrameInfo(const QByteArray&);
     void handleControlCommand(QByteArray);
-    int rowForControl(const QString&) const;
     void sendControlCommand(const QByteArray& op, const QByteArray& param1, const QByteArray& param2);
     void clearControls();
-
-    void controls_createNumberControl(const QByteArray& name, const QByteArray& minValueString,
+    void deleteControl(const QString& name, int type);
+    void controls_createSlider(const QByteArray& name, const QByteArray& minValueString,
                                                   const QByteArray& maxValueString, const QByteArray& initialValueString);
+    void controls_createTimeSeriesPlot(const QByteArray& name);
+
+
     void controls_setNumberValue(const QByteArray&, const QByteArray&);
     void controls_setStringValue(const QByteArray&, const QByteArray&);
+    void controls_createCheckbox(const QByteArray&, const QByteArray&);
+    void loadHelpData();
 };
 
 #endif // MAINWINDOW_H
