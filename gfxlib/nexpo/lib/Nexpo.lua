@@ -516,6 +516,9 @@ local function checkInput()
   end
 end
 
+--- Start running a script. This should be the last line of every Nexpo script.
+-- It passes control to Nexpo, which will run the render loop and process user input.
+-- @see stop
 function start()
   assert(type(update) == 'function', 'Missing "update" function, nothing to do')
   startTime = gfxlib.canvasTime()
@@ -535,6 +538,10 @@ function start()
   gfxlib.destroyCanvas()
 end
 
+--- Stop running a script. This function can be called at any time to stop rendering.
+-- Nexpo will stop its render loop and control will return to where the start() function
+-- was called (which should be the end of the script).
+-- @see start
 function stop()
   gfxlib.setWindowShouldClose(true)
 end

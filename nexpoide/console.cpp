@@ -5,6 +5,9 @@
 #include <QClipboard>
 #include <QApplication>
 #include <QSettings>
+#include <QCompleter>
+#include <QAbstractItemView>
+#include <QScrollBar>
 
 #include <iostream>
 
@@ -15,6 +18,7 @@ Console::Console(QWidget *parent)
     : QPlainTextEdit(parent)
     , m_commandLineReady(false)
     , m_historyPos(-1)
+    , m_completer(0)
 {
     QFont f;
 #ifdef Q_OS_LINUX
@@ -83,6 +87,16 @@ QString Console::currentWord() const
     return cur.selectedText();
 }
 
+void Console::setCompleter(QCompleter* c)
+{
+    m_completer = c;
+    c->setParent(this);
+    c->setWidget(this);
+    c->setCompletionMode(QCompleter::PopupCompletion);
+    c->setCaseSensitivity(Qt::CaseInsensitive);
+    connect(c, SIGNAL(activated(QString)), this, SLOT(insertCompletion(QString)));
+}
+
 bool Console::inCommandLine() const
 {
     return document()->blockCount()-1 == textCursor().blockNumber() && textCursor().positionInBlock() >= m_prefix.length();
@@ -99,6 +113,19 @@ void Console::moveToEndOfCommandLine()
 void Console::cls() {
     clear();
     prepareCommandLine();
+}
+
+void Console::insertCompletion(const QString& text)
+{
+    if (!m_completer) return;
+    QTextCursor cur = textCursor();
+    cur.select(QTextCursor::WordUnderCursor);
+    if (cur.selectedText().compare(m_completer->completionPrefix(), Qt::CaseInsensitive) == 0) {
+        cur.removeSelectedText();
+        cur.setCharFormat(QTextCharFormat());
+        cur.insertText(text);
+        setTextCursor(cur);
+    }
 }
 
 void Console::prepareCommandLine()
@@ -143,12 +170,14 @@ void Console::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Return) // process command
     {
-      processCommand();
-      return;
+        if (m_completer && m_completer->popup()->isVisible()) {
+            event->ignore();
+            return;
+        } else {
+            processCommand();
+        }
+        return;
     }
-
-
-
 
   if (inCommandLine())
   {
@@ -221,11 +250,23 @@ void Console::keyPressEvent(QKeyEvent *event)
         cur.setCharFormat(QTextCharFormat());
         setTextCursor(cur);
     } else if (event->key() == Qt::Key_Escape) {
-        QTextCursor cur(document()->lastBlock());
-        cur.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, m_prefix.length());
-        cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        cur.removeSelectedText();
-        setTextCursor(cur);
+        if (m_completer && m_completer->popup()->isVisible()) {
+            m_completer->popup()->hide();
+        } else {
+            QTextCursor cur(document()->lastBlock());
+            cur.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, m_prefix.length());
+            cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+            cur.removeSelectedText();
+            setTextCursor(cur);
+        }
+    } else if (event->key() == Qt::Key_Tab) {
+        if (m_completer) {
+            m_completer->setCompletionPrefix(currentWord());
+            QRect cr = cursorRect();
+            cr.setWidth(m_completer->popup()->sizeHintForColumn(0)
+                        + m_completer->popup()->verticalScrollBar()->sizeHint().width());
+            m_completer->complete(cr);
+        }
     } else if (!event->matches(QKeySequence::Close) &&
                !event->matches(QKeySequence::New) &&
                !event->matches(QKeySequence::Open) &&

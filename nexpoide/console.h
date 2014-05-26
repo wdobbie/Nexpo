@@ -4,6 +4,8 @@
 #include <QPlainTextEdit>
 #include <QStringList>
 
+class QCompleter;
+
 class Console : public QPlainTextEdit
 {
     Q_OBJECT
@@ -15,6 +17,7 @@ public:
     void setPrefixFont(const QFont&);
     void setPrefixColor(const QColor&);
     QString currentWord() const;
+    void setCompleter(QCompleter*);
 
 signals:
     void command(const QByteArray&);
@@ -23,6 +26,7 @@ public slots:
     void print(const QString&);
     void printError(const QString&);
     void cls();
+    void insertCompletion(const QString&);
 
 private:
     bool inCommandLine() const;
@@ -40,6 +44,7 @@ private:
     QColor m_errorColor;
     QStringList m_history;
     int m_historyPos;
+    QCompleter* m_completer;
 
 };
 

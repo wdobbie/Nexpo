@@ -825,9 +825,11 @@ void MainWindow::loadHelpData()
         FileEditor::addApiEntry(entry);
     }
 
-    // Set completer
-    QCompleter* completer = new QCompleter(targets, this);
-    ui->helpSearchBox->setCompleter(completer);
+    // Set completers
+    QCompleter* helpCompleter = new QCompleter(targets, this);
+    ui->helpSearchBox->setCompleter(helpCompleter);
+    QCompleter* consoleCompleter = new QCompleter(targets);
+    ui->console->setCompleter(consoleCompleter);
 
     // Prepare apis
     FileEditor::prepareApi();
