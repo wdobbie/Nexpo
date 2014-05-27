@@ -404,7 +404,7 @@ QTabBar::close-button:hover {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>330</width>
+               <width>483</width>
                <height>315</height>
               </rect>
              </property>
@@ -476,7 +476,7 @@ QTabBar::close-button:hover {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>329</width>
+               <width>483</width>
                <height>315</height>
               </rect>
              </property>
@@ -887,8 +887,8 @@ QTabBar::close-button:hover {
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>579</width>
-       <height>100</height>
+       <width>272</width>
+       <height>96</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -933,8 +933,8 @@ QTabBar::close-button:hover {
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>579</width>
-       <height>337</height>
+       <width>281</width>
+       <height>341</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -960,7 +960,7 @@ QTabBar::close-button:hover {
        <number>12</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="helpSearchBox">
+       <widget class="FindLineEdit" name="helpSearchBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -995,6 +995,12 @@ QTabBar::close-button:hover {
       </item>
       <item>
        <widget class="QLabel" name="helpTitle">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="font">
          <font>
           <pointsize>15</pointsize>
@@ -1003,10 +1009,13 @@ QTabBar::close-button:hover {
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">margin-top: 10px;</string>
+         <string notr="true">margin-top: 12px;</string>
         </property>
         <property name="text">
          <string>FunctionName(param1, param2)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>false</bool>
@@ -1776,6 +1785,22 @@ border: none;
     <hint type="destinationlabel">
      <x>1132</x>
      <y>233</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpSearchBox</sender>
+   <signal>escapePressed()</signal>
+   <receiver>helpDockWidget</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>805</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>983</x>
+     <y>398</y>
     </hint>
    </hints>
   </connection>

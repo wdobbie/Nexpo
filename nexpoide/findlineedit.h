@@ -20,6 +20,7 @@ protected:
     void keyPressEvent(QKeyEvent*);
     void hideEvent(QHideEvent *);
     void showEvent(QShowEvent *);
+    void focusInEvent(QFocusEvent *);
 };
 
 #endif // FINDLINEEDIT_H

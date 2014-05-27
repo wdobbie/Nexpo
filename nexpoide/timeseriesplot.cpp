@@ -13,12 +13,15 @@ TimeSeriesPlot::TimeSeriesPlot(QWidget *parent)
     , m_lastPlotTime(0)
 {
     ui->setupUi(this);
-
+    ui->plot->setBackground(QPalette().brush(QPalette::Background));
     ui->plot->addGraph();
     //ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle));
     ui->plot->graph(0)->setLineStyle(QCPGraph::lsStepLeft);
-    ui->plot->xAxis->setTicks(false);
-    ui->plot->xAxis->setVisible(false);
+    //ui->plot->xAxis->setTicks(false);
+    //ui->plot->xAxis->setVisible(false);
+    ui->plot->graph(0)->setAntialiased(false);
+    ui->plot->xAxis->setLabel("Elapsed time (s)");
+    ui->plot->xAxis->setRange(0, 1e-20);
     ui->plot->legend->setVisible(true);
     ui->plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
 }
@@ -33,48 +36,48 @@ QCustomPlot *TimeSeriesPlot::plot()
     return ui->plot;
 }
 
-void TimeSeriesPlot::addValue(double value)
+void TimeSeriesPlot::addValue(double time, double value)
 {
     if (m_nextSlot < m_ydata.size()) {
         m_ydata[m_nextSlot] = value;
+        m_xdata[m_nextSlot] = time;
         m_nextSlot++;
     } else {
         m_ydata.pop_front();
         m_ydata.append(value);
+        m_xdata.pop_front();
+        m_xdata.append(time);
         m_nextSlot = m_ydata.count();
     }
+
+    // Update range
+    if (!m_modified) {
+       m_lower = value;
+       m_upper = value;
+       m_modified = true;
+    }
+
+    if (value < m_lower)  m_lower = value;
+    if (value > m_upper) m_upper = value;
+}
+
+void TimeSeriesPlot::replot(double elapsed)
+{
+    if (!m_modified) return;
 
     // replot if enough time elapsed
     qint64 now = QDateTime::currentMSecsSinceEpoch();
     if (now - m_lastPlotTime > m_plotInterval) {
+        // Update axes ranges
+        ui->plot->xAxis->setRange(m_xdata[0], elapsed);
+        double buffer = qMax(1e-20, (m_upper - m_lower) * 0.1);
+        ui->plot->yAxis->setRange(m_lower - buffer, m_upper + buffer);
+
+        // Plot
         m_lastPlotTime = now;
         ui->plot->graph(0)->setData(m_xdata, m_ydata);
-
-        bool needRangeUpdate = false;
-        if (!m_modified) {
-            needRangeUpdate = true;
-            m_lower = value;
-            m_upper = value;
-        }
-
-        if (value < m_lower) {
-            needRangeUpdate = true;
-            m_lower = value;
-        }
-        if (value > m_upper) {
-            needRangeUpdate = true;
-            m_upper = value;
-        }
-
-        if (needRangeUpdate) {
-            double buffer = qMax(1e-20, (m_upper - m_lower) * 0.1);
-            ui->plot->yAxis->setRange(m_lower - buffer, m_upper + buffer);
-        }
-
         ui->plot->replot();
     }
-
-    m_modified = true;
 }
 
 void TimeSeriesPlot::clear()
@@ -100,11 +103,7 @@ void TimeSeriesPlot::setWindowSize(int n)
         if (m_nextSlot > m_ydata.count()) m_nextSlot = m_ydata.count();
     }
 
-    m_xdata.resize(n);
-    for (int i=0; i<n; i++) {
-        m_xdata[i] = i;
-    }
-    ui->plot->xAxis->setRange(0, n);
+    m_xdata.resize(m_ydata.size());
 }
 
 void TimeSeriesPlot::setMinimumPlotInterval(double seconds)

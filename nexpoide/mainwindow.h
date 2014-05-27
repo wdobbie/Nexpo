@@ -167,6 +167,7 @@ private:
     void controls_setStringValue(const QByteArray&, const QByteArray&);
     void controls_createCheckbox(const QByteArray&, const QByteArray&);
     void loadHelpData();
+    void hideHelpContents();
 };
 
 #endif // MAINWINDOW_H

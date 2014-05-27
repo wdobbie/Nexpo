@@ -55,8 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Add left spacer
     QWidget* spacer1 = new QWidget(this);
-    spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    spacer1->setFixedHeight(0);
+    spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+    spacer1->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->mainToolBar->insertWidget(ui->actionConsole, spacer1);
 
     // Add status widget
@@ -68,8 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Add right spacer
     QWidget* spacer2 = new QWidget(this);
-    spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    spacer2->setFixedHeight(0);
+    spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+    spacer2->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->mainToolBar->insertWidget(ui->actionConsole, spacer2);
 
     // Restore window state
@@ -774,14 +774,17 @@ void MainWindow::numberControlValueChanged(double value)
     sendControlCommand(QByteArrayLiteral("numbervalue"), widget->objectName().toUtf8(), QByteArray::number(value));
 }
 
-void MainWindow::loadHelpData()
+void MainWindow::hideHelpContents()
 {
     // Hide all widgets in help dock
     for (int i=0; i<ui->helpLayout->count(); i++) {
         QWidget* widget = ui->helpLayout->itemAt(i)->widget();
         if (widget != ui->helpSearchBox) widget->hide();
     }
+}
 
+void MainWindow::loadHelpData()
+{
     // Load json help
     QString path = QString("%1/lib/help.json").arg(nexpoPath());
     QFileInfo info(path);
@@ -840,13 +843,28 @@ void MainWindow::loadHelpData()
 bool MainWindow::showHelp(const QString& str)
 {
     QString target = str.trimmed().toLower();
+
+    // Hide help dock if it's already visible and the search string is same as previous
+    // This lets you press F1 again to close help
+    if ((ui->helpSearchBox->hasFocus() == false || ui->helpSearchBox->text().size() == 0)
+            && target == ui->helpSearchBox->text() && ui->helpDockWidget->isVisible())
+    {
+        ui->helpDockWidget->hide();
+        return false;
+     }
+
+    // Show help dock
+    ui->helpDockWidget->show();
+    ui->helpSearchBox->setText(target);
+    hideHelpContents();
     if (target.size() == 0) return false;
 
     // Get help table for this string
     if (m_helpData == 0) return false;
     QJsonValue helpValue = m_helpData->value(target);
     if (!helpValue.isObject()) {
-        std::cerr << "No help available for " << target.toUtf8().constData() << std::endl;
+        ui->helpDescription->setText("No help available for “" + str + "”");
+        ui->helpDescription->show();
         return false;
     }
     QJsonObject help = helpValue.toObject();
@@ -863,7 +881,7 @@ bool MainWindow::showHelp(const QString& str)
     // Parameters
     QJsonArray pnames = help.value("pnames").toArray();
     QJsonArray pdesc = help.value("pdesc").toArray();
-    QString paramlist;
+    QStringList paramlist;
     // Clear old params
     while (ui->helpParametersLayout->count() > 0) {
         delete ui->helpParametersLayout->itemAt(0)->widget();
@@ -876,7 +894,6 @@ bool MainWindow::showHelp(const QString& str)
             desc->setWordWrap(true);
             ui->helpParametersLayout->addRow(pnames[i].toString(), desc);
             ((QLabel*)(ui->helpParametersLayout->labelForField(desc)))->setAlignment(Qt::AlignTop);
-            if (paramlist.size() > 0) paramlist += ", ";
             paramlist += pnames[i].toString();
         }
         ui->helpParametersContainer->show();
@@ -886,7 +903,7 @@ bool MainWindow::showHelp(const QString& str)
 
     // Name
     QString name = help.value("name").toString();
-    ui->helpTitle->setText(name + "(" + paramlist + ")");
+    ui->helpTitle->setText(name + " (" + paramlist.join(", ") + ")");
     ui->helpTitle->setVisible(name.size() > 0);
 
     // Description
@@ -936,8 +953,6 @@ bool MainWindow::showHelp(const QString& str)
     }
     ui->helpSeeRow->setVisible(ui->helpSeeLayout->count() > 0);
 
-    // Show help panel
-    ui->helpDockWidget->show();
     return true;
 }
 
@@ -1008,7 +1023,7 @@ void MainWindow::controls_setNumberValue(const QByteArray& name, const QByteArra
                 (qobject_cast<SliderWithSpinner*> (control))->setValue(value);
                 break;
             case Control::TimeSeriesPlot:
-                (qobject_cast<TimeSeriesPlot*> (control))->addValue(value);
+                (qobject_cast<TimeSeriesPlot*> (control))->addValue(m_scriptElapsed, value);
                 break;
             default:
                 break;
@@ -1024,6 +1039,7 @@ void MainWindow::controls_createTimeSeriesPlot(const QByteArray &name)
     plot->setTitle(name);
     plot->setWindowSize(200);
     //ui->controlsLayout->setWidget(ui->controlsLayout->rowCount(), QFormLayout::SpanningRole, plot);
+    connect(this, &MainWindow::scriptElapsedChanged, plot, &TimeSeriesPlot::replot);
     ui->controlsLayout->addRow(plot);
     ui->controlsDockWidget->show();
 }
@@ -1427,16 +1443,22 @@ void MainWindow::on_actionGo_To_Line_triggered()
 void MainWindow::on_actionHelp_triggered()
 {
     if (currentEditor() && currentEditor()->hasFocus()) {
+        // Help for current word in editor
         int line, index;
         currentEditor()->getCursorPosition(&line, &index);
-        QString word = currentEditor()->wordAtLineIndex(line, index);
-        showHelp(word);
+        showHelp(currentEditor()->wordAtLineIndex(line, index));
     } else if (ui->console->hasFocus()) {
+        // Help for current word in console
         showHelp(ui->console->currentWord());
+        if (ui->console->currentWord().size() == 0 && ui->helpDockWidget->isVisible()) {
+            ui->helpSearchBox->setFocus();
+        }
     } else {
-        ui->helpDockWidget->show();
-        ui->helpSearchBox->setFocus();
-        ui->helpSearchBox->selectAll();
+        showHelp(QString());
+        if (ui->helpDockWidget->isVisible()) {
+            ui->helpSearchBox->setFocus();
+            ui->helpSearchBox->selectAll();
+        }
     }
 }
 

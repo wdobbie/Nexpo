@@ -6,6 +6,7 @@ ScriptStatusWidget::ScriptStatusWidget(QWidget *parent) :
     ui(new Ui::ScriptStatusWidget)
 {
     ui->setupUi(this);
+    setAttribute(Qt::WA_TransparentForMouseEvents, true);
 }
 
 ScriptStatusWidget::~ScriptStatusWidget()

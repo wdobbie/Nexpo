@@ -18,7 +18,7 @@ public:
     explicit TimeSeriesPlot(QWidget *parent = 0);
     ~TimeSeriesPlot();
     QCustomPlot* plot();
-    void addValue(double);
+    void addValue(double, double);
     void setTitle(const QString&);
     void setWindowSize(int);
     void setMinimumPlotInterval(double);
@@ -27,6 +27,7 @@ public:
 
 public slots:
     void clear();
+    void replot(double);
 
 private:
     Ui::TimeSeriesPlot *ui;
