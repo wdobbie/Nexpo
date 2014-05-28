@@ -6,8 +6,12 @@
 
 
 -- Window size in pixels
-window_width = 800
+window_width = 600
 window_height = 600
+
+-- Window position
+-- window_x = 0
+-- window_y = 0
 
 -- Full screen resolution in pixels. Set to 0 for native resolution.
 fullscreen_width = 0
@@ -31,7 +35,7 @@ gamma = 2.2
 --	b = {...}
 -- }
 
--- Target monitor, only applies when fullscreen == true
+-- Target monitor, only applies when fullscreen is true
 -- Can either be a number from 1 to n, where n is the number of attached monitors,
 -- or it can be the name of a monitor, eg 'DELL U2713H'
 -- The current monitor name can be retrieved from lua using print(monitorname()),

@@ -404,7 +404,7 @@ QTabBar::close-button:hover {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>483</width>
+               <width>443</width>
                <height>315</height>
               </rect>
              </property>
@@ -476,7 +476,7 @@ QTabBar::close-button:hover {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>483</width>
+               <width>442</width>
                <height>315</height>
               </rect>
              </property>
@@ -802,6 +802,7 @@ QTabBar::close-button:hover {
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionHelp"/>
+    <addaction name="actionHide_Help"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
@@ -887,8 +888,8 @@ QTabBar::close-button:hover {
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>272</width>
-       <height>96</height>
+       <width>353</width>
+       <height>89</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -933,12 +934,12 @@ QTabBar::close-button:hover {
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>281</width>
-       <height>341</height>
+       <width>353</width>
+       <height>357</height>
       </rect>
      </property>
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -1034,9 +1035,15 @@ QTabBar::close-button:hover {
       </item>
       <item>
        <widget class="QWidget" name="helpParametersContainer" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QFormLayout" name="helpParametersLayout">
          <property name="sizeConstraint">
-          <enum>QLayout::SetNoConstraint</enum>
+          <enum>QLayout::SetDefaultConstraint</enum>
          </property>
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
@@ -1068,9 +1075,21 @@ QTabBar::close-button:hover {
          </item>
          <item row="0" column="1">
           <widget class="QLabel" name="label_8">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>Description of param1
-Possibly multi line</string>
+Possibly multi line depending on how long the description is</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -1577,6 +1596,25 @@ border: none;
     <string>F1</string>
    </property>
   </action>
+  <action name="actionHide_Help">
+   <property name="text">
+    <string>Hide Help</string>
+   </property>
+   <property name="toolTip">
+    <string>Hide the help panel</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F1</string>
+   </property>
+  </action>
+  <action name="actionClear_Recent_Files">
+   <property name="text">
+    <string>Clear Recent Files</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove all entries from the recent files list</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1801,6 +1839,38 @@ border: none;
     <hint type="destinationlabel">
      <x>983</x>
      <y>398</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpDockWidget</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionHide_Help</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1096</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionHide_Help</sender>
+   <signal>triggered()</signal>
+   <receiver>helpDockWidget</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1096</x>
+     <y>392</y>
     </hint>
    </hints>
   </connection>

@@ -304,6 +304,11 @@ LUAEXPORT(void cursorPos(double* dest))
     dest[1] = wsize[1]/2 - dest[1];
 }
 
+LUAEXPORT(bool mouseButton(int btn))
+{
+    return glfwGetMouseButton(g_canvas.m_window, btn) == GLFW_PRESS;
+}
+
 LUAEXPORT(double canvasTime())
 {
     return glfwGetTime();

@@ -15,7 +15,7 @@ shader by Nexpo.
 --]]
 
 
-require 'Nexpo'
+nexpo = require 'Nexpo'
 
 local shader_source = [[
   uniform float dotsize;
@@ -32,15 +32,17 @@ local shader_defaults = {
   dotsize = 0.1,
 }
 
-addshader('dots', shader_source, shader_defaults)
+nexpo.graphics.addshader('dots', shader_source, shader_defaults)
 
-c = circle()
+c = nexpo.graphics.circle()
 c.style.shader = 'dots'
 c.size = 50
 
-function update()
-  c.style.dotsize = 0.01 + 0.05 * (math.cos(time()) * 0.5 + 0.5)
-  draw(c)
+nexpo.controls.plot 'c.style.dotsize'
+
+function nexpo.graphics.onframe()
+  c.style.dotsize = 0.01 + 0.05 * (math.cos(nexpo.graphics.time()) * 0.5 + 0.5)
+  nexpo.graphics.draw(c)
 end
 
-start()
+nexpo.start()

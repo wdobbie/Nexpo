@@ -400,14 +400,14 @@ void FileEditor::highlightFindText(const QString& text)
     //qDebug() << "find: i=" << i;
 
     // Restore selection
-    setSelection(lineFrom, indexFrom, lineTo, indexTo);
+    //setSelection(lineFrom, indexFrom, lineTo, indexTo);
 
     // Restore original scroll position
     verticalScrollBar()->setValue(vscroll);
     horizontalScrollBar()->setValue(hscroll);
 
     // Ensure selection is visible
-    ensureCursorVisible();
+    //ensureCursorVisible();
 
     emit statusMessageChanged(QString("%1 match%2 for %3")
                               .arg(numMatches)

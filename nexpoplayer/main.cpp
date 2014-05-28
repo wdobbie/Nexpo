@@ -93,7 +93,7 @@ void run(const std::string& scriptPath)
     // Set working directory to script's directory
     chdir(dirFromPath(scriptPath).c_str());
 
-    std::string runCmd = "xpcall(dofile, function(e) io.stderr:write(debug.traceback(e)) end, \""
+    std::string runCmd = "xpcall(dofile, function(e) io.stderr:write(__traceback and debug.traceback(e) or tostring(e)) end, \""
             + fileFromPath(scriptPath)
             + "\")";
 

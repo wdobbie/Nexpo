@@ -8,7 +8,7 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/glfw/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/libtess2/include
 INCLUDEPATH += $$_PRO_FILE_PWD_/glm
 
-DESTDIR = $$_PRO_FILE_PWD_/../Nexpo
+DESTDIR = $$_PRO_FILE_PWD_/../Nexpo/lib
 
 mac {
     LIBS += $$_PRO_FILE_PWD_/libtess2/build/mac/release/libtess2.a

@@ -418,6 +418,8 @@ void MainWindow::createRecentFileActions()
         connect(recentFileActions[i], &QAction::triggered, this, &MainWindow::openFileAction);
         ui->menuOpen_Recent->addAction(recentFileActions[i]);
     }
+    ui->menuOpen_Recent->addSeparator();
+    ui->menuOpen_Recent->addAction(ui->actionClear_Recent_Files);
     updateRecentFileActions();
 }
 
@@ -488,10 +490,11 @@ void MainWindow::updateRecentFileActions()
     QStringList files = settings.value("recentFileList").toStringList();
     int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
 
-    // Delete current entries
+    // Delete current entries in welcome screen
     while (ui->recentFilesContainer->layout()->count() > 0) {
         if (QLayoutItem* item = ui->recentFilesContainer->layout()->takeAt(0)) {
-            if (QWidget* widget = item->widget()) {
+            QWidget* widget = item->widget();
+            if (widget != 0 && widget->objectName() != QStringLiteral("restoreButton")) {
                 delete widget;
             }
         }
@@ -525,44 +528,13 @@ void MainWindow::updateRecentFileActions()
         ui->recentFilesContainer->layout()->addWidget(btn);
     }
 
-    // Create "restore last session" button
-    QStringList lastSession = settings.value("lastSession").toStringList();
-    if (lastSession.count() > 0) {
-        QDateTime lastSessionTime = settings.value("lastSessionTime").toDateTime();
-        QString tooltip;
-
-        // Start tooltip with timestamp if we have it
-        if (lastSessionTime.isValid()) {
-            tooltip = lastSessionTime.toString("MMM d, h:mm ap: ");
-        }
-
-        // Append filenames to tooltip
-        QStringList filenames;
-        for (int i=0; i<lastSession.count(); i++) {
-            QFileInfo info(lastSession[i]);
-            filenames.append(info.fileName());
-        }
-        tooltip += filenames.join(", ");
-
-        ui->actionRestore_Last_Session->setToolTip(tooltip);
-        ui->actionRestore_Last_Session->setEnabled(true);
-        LinkButton* restoreButton = new LinkButton;
-        ui->actionRestore_Last_Session->setText(QString("Restore last session (%1 file%2)")
-                                                .arg(lastSession.count())
-                                                .arg(lastSession.count() == 1 ? "" : "s"));
-
-        restoreButton->setCursor(Qt::PointingHandCursor);
-        restoreButton->setDefaultAction(ui->actionRestore_Last_Session);
-        QWidget* spacer = new QWidget(this);
-        spacer->setFixedHeight(15);
-        ui->recentFilesContainer->layout()->addWidget(spacer);
-        ui->recentFilesContainer->layout()->addWidget(restoreButton);
-    }
-
     // Hide unused actions (in menu)
     for (int i=numRecentFiles; i<MaxRecentFiles; i++) {
         recentFileActions[i]->setVisible(false);
     }
+
+    // Show "Clear Recent Files" if we have some
+    ui->actionClear_Recent_Files->setVisible(numRecentFiles>0);
 }
 
 void MainWindow::addRecentFile(const QString& path)
@@ -783,6 +755,22 @@ void MainWindow::hideHelpContents()
     }
 }
 
+#include <QStringListModel>
+
+class HelpModel : public QStringListModel
+{
+public:
+    explicit HelpModel(QObject* parent = 0) : QStringListModel(parent) {}
+
+    QVariant data(const QModelIndex &index, int role) const {
+        if (role == Qt::EditRole) {
+            QString str = QStringListModel::data(index, Qt::EditRole).toString();
+            return str.mid(str.lastIndexOf('.')+1);
+        }
+        return QStringListModel::data(index, role);
+    }
+};
+
 void MainWindow::loadHelpData()
 {
     // Load json help
@@ -808,14 +796,18 @@ void MainWindow::loadHelpData()
     m_helpData = new QJsonObject(doc.object());
 
     // Create completer for help search box and APIs for editor
-    QStringList targets;
+    m_helpModel = new HelpModel(this);
+
     for (auto p = m_helpData->constBegin(); p != m_helpData->constEnd(); p++) {
-        // Add name to completion list
+        // Get help name and shortname (eg nexpo.graphics.draw and draw)
         QJsonObject obj = p.value().toObject();
         QString name = obj.value("name").toString();
-        if (name.size() > 0) {
-            targets.append(name);
-        }
+        if (name.size() == 0) continue;
+        QString shortname = name.mid(name.lastIndexOf('.')+1);
+
+        QModelIndex index = m_helpModel->index(m_helpModel->rowCount()-1);
+        m_helpModel->insertRow(m_helpModel->rowCount());
+        m_helpModel->setData(index, name, Qt::DisplayRole);
 
         // Add name(param1, param2) to api entries
         QStringList paramlist;
@@ -824,14 +816,18 @@ void MainWindow::loadHelpData()
             QString param = params[i].toString();
             if (param.size()) paramlist.append(param);
         }
-        QString entry = name + "(" + paramlist.join(", ") + ")";
+        QString entry = shortname + "(" + paramlist.join(", ") + ")";
         FileEditor::addApiEntry(entry);
     }
 
     // Set completers
-    QCompleter* helpCompleter = new QCompleter(targets, this);
+    QCompleter* helpCompleter = new QCompleter(m_helpModel, this);
+    helpCompleter->setFilterMode(Qt::MatchContains);
+    helpCompleter->setCompletionRole(Qt::DisplayRole);
     ui->helpSearchBox->setCompleter(helpCompleter);
-    QCompleter* consoleCompleter = new QCompleter(targets);
+    QCompleter* consoleCompleter = new QCompleter(m_helpModel, this);
+    consoleCompleter->setCompletionRole(Qt::DisplayRole);
+    consoleCompleter->setFilterMode(Qt::MatchContains);
     ui->console->setCompleter(consoleCompleter);
 
     // Prepare apis
@@ -842,25 +838,31 @@ void MainWindow::loadHelpData()
 
 bool MainWindow::showHelp(const QString& str)
 {
-    QString target = str.trimmed().toLower();
-
-    // Hide help dock if it's already visible and the search string is same as previous
-    // This lets you press F1 again to close help
-    if ((ui->helpSearchBox->hasFocus() == false || ui->helpSearchBox->text().size() == 0)
-            && target == ui->helpSearchBox->text() && ui->helpDockWidget->isVisible())
-    {
-        ui->helpDockWidget->hide();
-        return false;
-     }
+    if (m_helpData == 0 || m_helpModel == 0) return false;
 
     // Show help dock
     ui->helpDockWidget->show();
-    ui->helpSearchBox->setText(target);
+    ui->helpSearchBox->setText(str);
     hideHelpContents();
+
+    // Look up full name
+    QString target = str.trimmed().toLower();
     if (target.size() == 0) return false;
 
+    // Try prefix match on full names
+    QModelIndexList matches = m_helpModel->match(m_helpModel->index(0), Qt::DisplayRole, target, Qt::MatchStartsWith | Qt::MatchFixedString);
+    if (matches.count() == 0) {
+        // Then try prefix match on short names
+        matches = m_helpModel->match(m_helpModel->index(0), Qt::EditRole, target, Qt::MatchStartsWith | Qt::MatchFixedString);
+    }
+
+    // Always use full name for lookup
+    if (matches.count() > 0) {
+        target = m_helpModel->data(matches[0], Qt::DisplayRole).toString();
+    }
+
     // Get help table for this string
-    if (m_helpData == 0) return false;
+
     QJsonValue helpValue = m_helpData->value(target);
     if (!helpValue.isObject()) {
         ui->helpDescription->setText("No help available for “" + str + "”");
@@ -928,13 +930,12 @@ bool MainWindow::showHelp(const QString& str)
     }
 
     // See
+    // Clear old buttons
+    while (ui->helpSeeLayout->count() > 0) {
+        delete ui->helpSeeLayout->itemAt(0)->widget();
+    }
     QJsonArray see = help.value("see").toArray();
     if (see.count() > 0) {
-        // Clear old buttons
-        while (ui->helpSeeLayout->count() > 0) {
-            delete ui->helpSeeLayout->itemAt(0)->widget();
-        }
-
         // Add new buttons
         for (int i=0; i<see.count(); i++) {
             QString seeTarget = see[i].toString();
@@ -1038,6 +1039,7 @@ void MainWindow::controls_createTimeSeriesPlot(const QByteArray &name)
     plot->setObjectName(name);
     plot->setTitle(name);
     plot->setWindowSize(200);
+    //plot->setMinimumPlotInterval(1.0/29);
     //ui->controlsLayout->setWidget(ui->controlsLayout->rowCount(), QFormLayout::SpanningRole, plot);
     connect(this, &MainWindow::scriptElapsedChanged, plot, &TimeSeriesPlot::replot);
     ui->controlsLayout->addRow(plot);
@@ -1291,6 +1293,42 @@ void MainWindow::setupWelcomeWidget()
             }
         }
     }
+
+    // Create "restore last session" button
+    m_lastSessionFiles = settings.value("lastSession").toStringList();
+    m_lastSessionCurrentFile = settings.value("lastSessionCurrentFile").toString();
+    if (m_lastSessionFiles.count() > 0) {
+        QDateTime lastSessionTime = settings.value("lastSessionTime").toDateTime();
+        QString tooltip;
+
+        // Start tooltip with timestamp if we have it
+        if (lastSessionTime.isValid()) {
+            tooltip = lastSessionTime.toString("MMM d, h:mm ap: ");
+        }
+
+        // Append filenames to tooltip
+        QStringList filenames;
+        for (int i=0; i<m_lastSessionFiles.count(); i++) {
+            QFileInfo info(m_lastSessionFiles[i]);
+            filenames.append(info.fileName());
+        }
+        tooltip += filenames.join(", ");
+
+        ui->actionRestore_Last_Session->setToolTip(tooltip);
+        ui->actionRestore_Last_Session->setEnabled(true);
+        LinkButton* restoreButton = new LinkButton;
+        restoreButton->setObjectName("restoreButton");
+        ui->actionRestore_Last_Session->setText(QString("Restore last session (%1 file%2)")
+                                                .arg(m_lastSessionFiles.count())
+                                                .arg(m_lastSessionFiles.count() == 1 ? "" : "s"));
+
+        restoreButton->setCursor(Qt::PointingHandCursor);
+        restoreButton->setDefaultAction(ui->actionRestore_Last_Session);
+        QWidget* spacer = new QWidget(this);
+        spacer->setFixedHeight(15);
+        ui->recentFilesContainer->layout()->addWidget(spacer);
+        ui->recentFilesContainer->layout()->addWidget(restoreButton);
+    }
 }
 
 void MainWindow::on_actionStop_triggered()
@@ -1397,14 +1435,10 @@ void MainWindow::on_openTabs_currentChanged(int)
 
 void MainWindow::on_actionRestore_Last_Session_triggered()
 {
-    QSettings settings;
-    QStringList session = settings.value("lastSession").toStringList();
-    QString currentFile = settings.value("lastSessionCurrentFile").toString();
-
-    for (int i=0; i<session.count(); i++) {
-        loadFile(session[i]);
+    for (int i=0; i<m_lastSessionFiles.count(); i++) {
+        loadFile(m_lastSessionFiles[i]);
     }
-    loadFile(currentFile);      // will make tab active
+    loadFile(m_lastSessionCurrentFile);      // will make tab active
 }
 
 void MainWindow::on_gotoLineValue_editingFinished()
@@ -1467,4 +1501,14 @@ void MainWindow::on_helpSearchBox_returnPressed()
     if (showHelp(ui->helpSearchBox->text())) {
         ui->helpSearchBox->selectAll();
     }
+}
+
+void MainWindow::on_actionClear_Recent_Files_triggered()
+{
+    QSettings settings;
+    settings.remove("recentFileList");
+    settings.remove("lastSession");
+    settings.remove("lastSessionCurrentFile");
+    delete findChild<LinkButton*>("restoreButton");
+    updateRecentFileActions();
 }

@@ -14,6 +14,7 @@ class FileEditor;
 class UpdateChecker;
 class ScriptStatusWidget;
 class QJsonObject;
+class HelpModel;
 
 class MainWindow : public QMainWindow
 {
@@ -114,6 +115,8 @@ private slots:
 
     void on_helpSearchBox_returnPressed();
 
+    void on_actionClear_Recent_Files_triggered();
+
 protected:
     virtual void closeEvent(QCloseEvent*);
     void dragEnterEvent(QDragEnterEvent* event);
@@ -141,6 +144,9 @@ private:
     FileEditor* m_currentEditor;
     ScriptStatusWidget* m_scriptStatusWidget;
     QJsonObject* m_helpData;
+    HelpModel* m_helpModel;
+    QStringList m_lastSessionFiles;
+    QString m_lastSessionCurrentFile;
 
     void startScriptProcess();
     void addRecentFile(const QString& path);

@@ -51,6 +51,7 @@ Application::Application(int& argc, char** argv)
     : QApplication(argc, argv)
     , m_mainWindow(0)
 {
+    this->setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 }
 
 void Application::setMainWindow(MainWindow *mainWindow)

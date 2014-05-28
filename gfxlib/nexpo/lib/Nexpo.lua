@@ -1,3 +1,11 @@
+local nexpo = {}
+nexpo.graphics = {}
+nexpo.mouse = {}
+nexpo.key = {}
+nexpo.window = {}
+nexpo.controls = {}
+nexpo.console = {}
+
 local ffi = require 'ffi'
 
 ffi.cdef [[
@@ -44,6 +52,9 @@ local shaderForName = {}
 local currentShader
 local ffiMat3 = ffi.new 'float[9]'
 local startTime
+local kControlPrefix = '\x05'
+local controlHandlers = {}
+local controls = {}
 
 local function initShader(shader)
   local nparam = gfxlib.getShaderParameterCount(shader.id)
@@ -75,7 +86,7 @@ local function initShader(shader)
 end
 
 
-function addshader(name, src, defaults)
+function nexpo.graphics.addshader(name, src, defaults)
   assert(type(name) == 'string' and type(src) == 'string', 'Wrong argument type')
   if shaderForName[name] then
     error 'A shader with that name already exists'
@@ -100,14 +111,14 @@ end
 
 
 local function updateWindowTransform()
-  local width, height = windowsize()
+  local width, height = nexpo.window.size()
   -- Scale from axis coordinates to normalized device coordinates
   -- The * 2 is because the OpenGL NDC is from -1 to 1, hence has width 2
   windowScaleX = windowPixelsPerUnit * 2 / width
   windowScaleY = windowPixelsPerUnit * 2 / height
 end
 
-function windowscale(v)
+function nexpo.window.scale(v)
   if v then
     windowPixelsPerUnit = v
     updateWindowTransform()
@@ -115,7 +126,7 @@ function windowscale(v)
   return v
 end
 
-function windowcenter(x, y)
+function nexpo.window.center(x, y)
   if y then
     windowCenterX = x
     windowCenterY = y
@@ -184,7 +195,7 @@ local function loadShaderFromDisk(name)
   if type(shader.source) ~= 'string' then
     error("Error loading shader " .. name .. ": source not returned from shader file")
   end
-  addshader(name, shader.source, shader.defaults)
+  nexpo.graphics.addshader(name, shader.source, shader.defaults)
   return shaderForName[name]
 end
 
@@ -239,7 +250,7 @@ local function drawMany(obj)
   end
 end
 
-function draw(obj)
+function nexpo.graphics.draw(obj)
   if #obj > 0 then
     return drawMany(obj)
   end
@@ -289,7 +300,16 @@ end
 -- as per http://luajit.org/ext_ffi_semantics.html#callback
 jit.off(pollEvents)
 
+local function showHelp(target)
+  assert(type(target) == 'string', 'parameter must be a string')
+  print(kControlPrefix..'help '..target)
+end
+
 local function commandForInput(input)
+  if input:lower() == 'help' or input:sub(1,5):lower() == 'help ' then
+    return function() showHelp(input:sub(6)) end
+  end
+  
     -- treat as expression by prepending 'return '
   local command, err = loadstring('return ' .. input)
   if command then return command end
@@ -302,9 +322,6 @@ local function commandForInput(input)
   return nil, err
 end
 
-local kControlPrefix = '\x05'
-local controlHandlers = {}
-local controls = {}
 
 
 local function createNumberSetter(target)
@@ -368,7 +385,7 @@ end
 -- @see combobox
 -- @see editbox
 -- @see checkbox
-function slider(target, min, max, initial)
+function nexpo.controls.slider(target, min, max, initial)
   assert(type(target) == 'string', 'target parameter must be a string')
   local control = createControl(target)
   local value = control.getter()
@@ -408,7 +425,7 @@ end
 -- @usage c = circle()
 -- plot 'c.diameter'
 -- @see slider
-function plot(target)
+function nexpo.controls.plot(target)
   assert(target, 'missing target argument')
   assert(type(target) == 'string' or type(target) == 'function', 'invalid target type')
   local control = createControl(target)
@@ -439,19 +456,11 @@ local function sendControlUpdates()
   end
 end
 
-function help(target)
-  if target == nil then
-    warn("Usage: help 'keyword'")
-    return
-  end
 
-  assert(type(target) == 'string', 'parameter must be a string')
-  print(kControlPrefix..'help '..target)
-end
 
 local function sendControlData()
   -- frame info
-  print(kControlPrefix..'frameinfo '..time())
+  print(kControlPrefix..'frameinfo '.. nexpo.graphics.time())
   
   sendControlUpdates()
 end
@@ -496,7 +505,7 @@ local function handleInputLine(line)
     return
   end
   
-  dump(command())
+  nexpo.console.dumpshort(command())
 end
 
 
@@ -512,20 +521,32 @@ local function checkInput()
   while true do
     local line = getInputLine()
     if line == nil then return end
-    xpcall(handleInputLine, function(e) warn(debug.traceback(e)) end, line)
+    xpcall(handleInputLine, function(e) warn(tostring(e)) end, line)
   end
 end
 
+--- Callback function when a new frame is ready to draw. Implement this function to do your drawing
+-- for each frame. It will be called by Nexpo every screen refresh until the user closes the window or
+-- the script calls nexpo.stop().
+-- @param elapsed The seconds elapsed since the script started.
+-- @see nexpo.start
+-- @see nexpo.stop
+function nexpo.graphics.onframe(elapsed) end
+
+-- we want to force the user to implement this
+nexpo.graphics.onframe = false
+
 --- Start running a script. This should be the last line of every Nexpo script.
 -- It passes control to Nexpo, which will run the render loop and process user input.
--- @see stop
-function start()
-  assert(type(update) == 'function', 'Missing "update" function, nothing to do')
+-- @see nexpo.stop
+-- @see nexpo.graphics.onframe
+function nexpo.start()
+  assert(type(nexpo.graphics.onframe) == 'function', 'Missing "nexpo.graphics.onframe" function, nothing to do')
   startTime = gfxlib.canvasTime()
   
-  while not gfxlib.shouldClose() do
+  while not gfxlib.shouldClose() and type(nexpo.graphics.onframe) == 'function' do
     updateWindowTransform()   -- TODO: only need to call this on window resize callback
-    update()
+    nexpo.graphics.onframe(nexpo.graphics.time())
     sendControlData()
     io.stdout:flush()
     io.stderr:flush()
@@ -541,32 +562,39 @@ end
 --- Stop running a script. This function can be called at any time to stop rendering.
 -- Nexpo will stop its render loop and control will return to where the start() function
 -- was called (which should be the end of the script).
--- @see start
-function stop()
+-- @see nexpo.start
+-- @see nexpo.graphics.onframe
+function nexpo.stop()
   gfxlib.setWindowShouldClose(true)
 end
 
-function rgb(r, g, b)
+function nexpo.graphics.rgb(r, g, b)
   return {r or 0, g or 0, b or 0, 1}
 end
 
-function rgba(r, g, b, a)
+function nexpo.graphics.rgba(r, g, b, a)
   return {r or 0, g or 0, b or 0, a or 1}
 end
 
 -------
 
-function mouse()
+function nexpo.mouse.pos()
   gfxlib.cursorPos(lastMousePos)
   return lastMousePos[0] / windowPixelsPerUnit - windowCenterX,
          lastMousePos[1] / windowPixelsPerUnit - windowCenterY 
 end
 
-function time()
+function nexpo.mouse.isdown(btn)
+  btn = btn or 1
+  assert(type(btn) == 'number', 'expected number parameter')
+  return gfxlib.mouseButton(btn-1)
+end
+  
+function nexpo.graphics.time()
   return gfxlib.canvasTime() - startTime
 end
 
-function path(svg)
+function nexpo.graphics.path(svg)
   local p = gfxlib.newPath()
   assert(p ~= nil, "Couldn't create path object")
   ffi.gc(p, gfxlib.freePath)
@@ -577,58 +605,53 @@ function path(svg)
   return p
 end
 
-function moveto(p, x, y)
+function nexpo.graphics.moveto(p, x, y)
   assert(p ~= nil, 'Missing path parameter')
   gfxlib.moveTo(p, x, y)
 end
 
-function lineto(p, x, y)
+function nexpo.graphics.lineto(p, x, y)
   assert(p ~= nil, 'Missing path parameter')
   gfxlib.lineTo(p, x, y)
 end
 
-function curveto(p, p1x, p1y, p2x, p2y, p3x, p3y)
+function nexpo.graphics.curveto(p, p1x, p1y, p2x, p2y, p3x, p3y)
   assert(p ~= nil, 'Missing path parameter')
   if p3y then
     gfxlib.cubicCurveTo(p, p1x, p1y, p2x, p2y, p3x, p3y)
   elseif p2y then
     gfxlib.quadraticCurveTo(p, p1x, p1y, p2x, p2y)
   else
-    error 'Missing parameters'
+    error('Missing parameters', 2)
   end
 end
 
-function windowsize()
-  local size = ffi.new 'int[2]'
-  gfxlib.windowSize(size)
-  return size[0], size[1]
-end
 
-function bgcolor(r, g, b, a)
+function nexpo.graphics.bgcolor(r, g, b, a)
   gfxlib.setClearColor(r, g, b, a or 0)
 end
 
-function loadsvg(path, str)
+function nexpo.graphics.loadsvg(path, str)
   gfxlib.appendSvgPath(path, str)
 end
 
 
-function loadfont(path)
+function nexpo.graphics.loadfont(path)
   assert(path, 'Missing font path parameter')
   local font = gfxlib.loadFont(path)
   if font == nil then
-    error('Error loading font ' .. path)
+    error('Error loading font ' .. path, 2)
   end
   ffi.gc(font, gfxlib.freeFont)
   return font
 end
 
-function codepoint(font, codepoint)
+function nexpo.graphics.codepoint(font, codepoint)
   assert(isFont(font), 'Invalid font parameter')
   assert(type(codepoint) == 'number', 'Invalid codepoint parameter (should be  a number)')
   local path = gfxlib.pathForCodepoint(font, codepoint)
   if path == nil then
-    error 'Error loading codepoint'
+    error('Error loading codepoint', 2)
   end
   return path
 end
@@ -637,7 +660,7 @@ end
 -------
 
 -- Convenience functions for particular shape/style combinations
-function circle(x, y, diameter)
+function nexpo.graphics.circle(x, y, diameter)
   return {
     shape = 'circle',
     x = x,
@@ -647,7 +670,7 @@ function circle(x, y, diameter)
   }
 end
 
-function ellipse(x, y, width, height)
+function nexpo.graphics.ellipse(x, y, width, height)
   return {
     shape = 'circle',
     x = x,
@@ -658,14 +681,14 @@ function ellipse(x, y, width, height)
   }
 end
 
-function grating(x, y, diameter, sf)
-  local g = circle(x, y, diameter)
+function nexpo.graphics.grating(x, y, diameter, sf)
+  local g = nexpo.graphics.circle(x, y, diameter)
   g.style.shader = 'grating'
   g.style.sf = sf
   return g
 end
 
-function rect(x, y, width, height)
+function nexpo.graphics.rect(x, y, width, height)
   local r = {
     shape = 'rect',
     x = x,
@@ -685,6 +708,82 @@ end
 
 -------
 
+
+--- Mouse button down callback function. Implement this function to receive
+-- a callback whenever a mouse button is pressed.
+-- @param button An integer representing the button pressed (1 = left, 2 = right, 3 = middle)
+-- @param modifiers Bitmask of keyboard modifiers that were pressed at the time.
+-- @see nexpo.mouse.onup
+-- @see nexpo.mouse.onmove
+-- @see nexpo.mouse.onscroll
+function nexpo.mouse.ondown(button, modifiers) end
+
+--- Mouse button up callback function. Implement this function to receive
+-- a callback whenever a mouse button is released.
+-- @param button An integer representing the button pressed (1 = left, 2 = right, 3 = middle)
+-- @param modifiers Bitmask of keyboard modifiers that were pressed at the time.
+-- @see nexpo.mouse.ondown
+-- @see nexpo.mouse.onmove
+-- @see nexpo.mouse.onscroll
+function nexpo.mouse.onup(button, modifiers) end
+
+--- Mouse move callback function. Implement this function to receive
+-- a callback whenever the mouse position changes.
+-- @param x x coordinate of the mouse cursor
+-- @param y y coordinate of the mouse cursor
+-- @see nexpo.mouse.onup
+-- @see nexpo.mouse.ondown
+-- @see nexpo.mouse.onscroll
+function nexpo.mouse.onmove(x, y) end
+
+--- Mouse scroll wheel callback function. Implement this function to receive
+-- a callback whenever the mousewheel is scrolled.
+-- @param yoffset Scroll amount in the vertical direction
+-- @param xoffset Scroll amount in the horizontal direction
+-- @see nexpo.mouse.onup
+-- @see nexpo.mouse.ondown
+-- @see nexpo.mouse.onmove
+function nexpo.mouse.onscroll(yoffset, xoffset) end
+
+--- Keyboard button down callback function. Implement this function to receive
+-- a callback whenever a key is pressed.
+-- @param keyname A string representation of the key name, eg 'a' or 'left_shift'
+-- @param scancode Scancode of the key
+-- @param modifiers Bitmask of keyboard modifiers that were pressed at the time
+-- @see nexpo.key.onup
+-- @see nexpo.key.onrepeat
+-- @see nexpo.key.onchar
+function nexpo.key.ondown(keyname, scancode, modifiers) end
+
+--- Keyboard button down callback function. Implement this function to receive
+-- a callback whenever a key is pressed.
+-- @param keyname A string representation of the key name, eg 'a' or 'left_shift'
+-- @param scancode Scancode of the key
+-- @param modifiers Bitmask of keyboard modifiers that were pressed at the time
+-- @see nexpo.key.ondown
+-- @see nexpo.key.onrepeat
+-- @see nexpo.key.onchar
+function nexpo.key.onup(keyname, scancode, modifiers) end
+
+--- Keyboard button repeat callback function. Implement this function to receive
+-- a callback whenever a key has been held down and is producing repeated characters.
+-- @param keyname A string representation of the key name, eg 'a' or 'left_shift'
+-- @param scancode Scancode of the key
+-- @param modifiers Bitmask of keyboard modifiers that were pressed at the time
+-- @see nexpo.key.onup
+-- @see nexpo.key.ondown
+-- @see nexpo.key.onchar
+function nexpo.key.onrepeat(keyname, scancode, modifiers) end
+
+--- Keyboard unicode character function. Implement this function to receive
+-- a callback with the unicode codepoint value when a key is pressed.
+-- @param codepoint The unicode codepoint of the key pressed
+-- @see nexpo.key.ondown
+-- @see nexpo.key.onup
+-- @see nexpo.key.onrepeat
+function nexpo.key.onchar(codepoint) end
+
+
 local namesForKeys
 local function keyCallback(key, scancode, action, mods)
   if namesForKeys == nil then
@@ -694,34 +793,34 @@ local function keyCallback(key, scancode, action, mods)
   local keyname = namesForKeys[key] or key
 
   if action == 0 then
-    if keyup then keyup(keyname, scancode, action, mods) end
+    if nexpo.key.onup then nexpo.key.onup(keyname, scancode, mods) end
   elseif action == 1 then
-    if keydown then keydown(keyname, scancode, action, mods) end
+    if nexpo.key.ondown then nexpo.key.ondown(keyname, scancode, mods) end
   elseif action == 2 then
-    if keyrepeat then keyrepeat(keyname, scancode, action, mods) end
+    if nexpo.key.onrepeat then nexpo.key.onrepeat(keyname, scancode, mods) end
   end
 
 end
 
 local function cursorPosCallback(x, y)
-  if mousemoved then mousemoved(x, y) end
+  if nexpo.mouse.onmove then nexpo.mouse.onmove(x, y) end
 end
 
 local function scrollCallback(xoffset, yoffset)
   -- NOTE: parameter order reversed on purpose
-  if scrolled then scrolled(yoffset, xoffset) end
+  if nexpo.mouse.onscroll then nexpo.mouse.onscroll(yoffset, xoffset) end
 end
 
 local function charCallback(codepoint)
-  if charinput then charinput(codepoint) end
+  if nexpo.key.onchar then nexpo.key.onchar(codepoint) end
 end
 
 local function mouseButtonCallback(button, action, mods)
   local btn = button + 1    -- GLFW starts button numbers at 0
   if action == 1 then
-    if mousedown then mousedown(btn, mods) end
+    if nexpo.mouse.ondown then nexpo.mouse.ondown(btn, mods) end
   else
-    if mouseup then mouseup(btn, mods) end
+    if nexpo.mouse.onup then nexpo.mouse.onup(btn, mods) end
   end
 end
 
@@ -737,8 +836,9 @@ local function loadsettings()
     vsync = true,
   }
 
-  local settingsFile = getNexpoPath() .. 'settings.lua'
+  local settingsFile = getNexpoPath() .. '../settings.lua'
   local f = loadfile(settingsFile, 't', settings)
+
   if f then
     local success, err = pcall(f)
     if not success then
@@ -768,11 +868,17 @@ local function setWindowHints(settings)
 
 end
 
-function windowpos(x, y)
+function nexpo.window.size()
+  local size = ffi.new 'int[2]'
+  gfxlib.windowSize(size)
+  return size[0], size[1]
+end
+
+function nexpo.window.pos(x, y)
   gfxlib.setWindowPos(x, y)
 end
 
-function monitorname()
+function nexpo.window.monitorname()
   local name = gfxlib.getMonitorName()
   if name == nil then
     return nil
@@ -781,12 +887,12 @@ function monitorname()
   end
 end
 
-function setgamma(g)
+function nexpo.window.setgamma(g)
   assert(type(g) == 'number', 'Argument must be a single number')
   gfxlib.setGamma(g)
 end
 
-function setgammaramp(r, g, b)
+function nexpo.window.setgammaramp(r, g, b)
   assert(type(r) == 'table' and type(g) == 'table' and type(b) == 'table',
     'Invalid gamma ramp parameters: expected three arrays of the same size')
 
@@ -817,7 +923,7 @@ local function lookupMonitor(mon)
   elseif mon == nil then
     return -1
   else
-    error 'Requested monitor must be an number (monitor index) or a string (monitor name)'
+    error('Requested monitor must be an number (monitor index) or a string (monitor name)', 2)
   end
 end
 
@@ -847,7 +953,7 @@ local function serializeTable(o, seen, maxindent, indent)
     local style = type(o) == 'table' and tablestyle or cdatastyle
     local s = style .. tostring(o) .. endstyle
 
-    if #indent <= maxindent then
+    if #indent <= maxindent*#singleIndent then
         if seen[o] then return s .. ', would recurse' end
         seen[o] = true
 
@@ -857,7 +963,7 @@ local function serializeTable(o, seen, maxindent, indent)
             for k,v in pairs(o) do
                 s = s  .. indent .. bullet .. serializeOne(k, seen, maxindent, indent)
                 s = s .. ": " .. serializeOne(v, seen, maxindent, indent .. singleIndent)
-                if type(v) ~= 'table' then s = s .. '\n' end
+                s = s .. '\n'
             end
         elseif pcall(ipairs, o) then
             s = s .. '\n'
@@ -866,7 +972,7 @@ local function serializeTable(o, seen, maxindent, indent)
             for i=1,limit do
                 s = s  .. indent .. bullet .. serializeOne(i, seen, maxindent, indent)
                 s = s .. ": " .. serializeOne(o[i], seen, maxindent, indent..singleIndent)
-                if type(v) ~= 'table' then s = s .. '\n' end
+                s = s .. '\n'
             end
             if limit < #o then
                 s = s .. indent '..and ' .. (#o - limit) .. ' other elements\n'
@@ -880,10 +986,8 @@ end
 
 serializeOne = function (o, seen, maxindent, indent)
     indent = indent or singleIndent
-    maxindent = maxindent or #singleIndent*10
+    maxindent = maxindent or 10
     --if reclevel > recmax then return '*' end
-
-
     
     if type(o) == "number" then
         return numberstyle .. tostring(o) .. endstyle
@@ -906,7 +1010,7 @@ serializeOne = function (o, seen, maxindent, indent)
     end
 end
 
-local function serialize(t, reclevel)
+function serialize(t, reclevel)
   local s = ''
   for k,v in pairs(t) do
     if #s > 0 then s = s .. " " end
@@ -916,13 +1020,15 @@ local function serialize(t, reclevel)
 end
 
 --- Recursively print the contents of a variable.
-function dump(...)
+-- @param ... One or more variables to print
+function nexpo.console.dump(...)
     local output = serialize({...}, math.huge)
     if output and #output > 0 then print(output) end
 end
 
 --- Print the contents of a variable, recursing a maximum of one level into tables.
-function dumpshort(...)
+-- @param ... One or more variables to print
+function nexpo.console.dumpshort(...)
     local output = serialize({...}, 1)
     if output and #output > 0 then print(output) end
 end
@@ -962,13 +1068,12 @@ local function init()
 
   if settings.gamma_ramp then
     assert(type(settings.gamma_ramp) == 'table', 'Error: gamma_ramp setting must be a table')
-    setgammaramp(settings.gamma_ramp.r, settings.gamma_ramp.g, settings.gamma_ramp.b)
+    nexpo.window.setgammaramp(settings.gamma_ramp.r, settings.gamma_ramp.g, settings.gamma_ramp.b)
   elseif settings.gamma then
-    setgamma(settings.gamma)
   end
 
-  if settings.x and settings.y then
-    windowpos(settings.windowx, settings.windowy)
+  if settings.window_x and settings.window_y then
+    windowpos(settings.window_x, settings.window_y)
   end
 
   gfxlib.setKeyCallback(keyCallback)
@@ -980,5 +1085,22 @@ local function init()
 end
 
 init()
+
+local function makereadonly(t)
+  assert(type(t) == 'table', 'argument must be a table')
+  setmetatable(t, {
+    __newindex = function(s, key, value)
+      error('table is read only, cannot insert "' .. tostring(key) .. '"',2)
+    end,
+  })
+end
+
+for k,v in pairs(nexpo) do
+  if type(v) == 'table' then makereadonly(v) end
+end
+
+makereadonly(nexpo)
+
+return nexpo
 
 

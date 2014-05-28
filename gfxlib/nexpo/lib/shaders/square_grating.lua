@@ -10,8 +10,8 @@ shader.source = [[
 ]]
 
 shader.defaults = {
-	color1 = rgb(1, 1, 1),
-	color2 = rgb(0, 0, 0),
+	color1 = {1, 1, 1, 1},
+	color2 = {0, 0, 0, 1},
 	phase = 0,
 	sf = 4,
 }

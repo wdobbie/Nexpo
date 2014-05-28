@@ -21,6 +21,7 @@ public slots:
 
 private:
     Ui::ScriptStatusWidget *ui;
+    double m_lastElapsedValue;
 };
 
 #endif // SCRIPTSTATUSWIDGET_H

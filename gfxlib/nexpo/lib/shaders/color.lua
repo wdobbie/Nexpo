@@ -8,7 +8,7 @@ shader.source = [[
 ]]
 
 shader.defaults = {
-	color = rgb(1, 1, 1),
+	color = {1, 1, 1, 1},
 }
 
 return shader
