@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QProcess>
 #include <QByteArray>
+#include <QJsonObject>
 
 namespace Ui {
 class MainWindow;
@@ -11,7 +12,7 @@ class MainWindow;
 
 class OutputRedirector;
 class FileEditor;
-class UpdateChecker;
+class JsonFetcher;
 class ScriptStatusWidget;
 class QJsonObject;
 class HelpModel;
@@ -35,7 +36,8 @@ public slots:
     void writeToScript(const QByteArray&);
     void updateStatusBar();
     void editorStatusMessageChanged(const QString& msg, int timeout);
-    void showLatestVersion(const QString& version, const QString& link, const QString& message);
+    void showLatestVersion(const QJsonObject&);
+    void gotUpdateHistory(const QJsonObject&);
     void scriptProcessStateChanged(QProcess::ProcessState state);
     void scriptProcessStderrReady();
     void scriptProcessStdoutReady();
@@ -113,9 +115,15 @@ private slots:
 
     void on_actionHelp_triggered();
 
+    void on_actionClear_Recent_Files_triggered();
+
+    void on_helpListView_activated(const QModelIndex &index);
+
+    void on_helpDockWidget_visibilityChanged(bool visible);
+
     void on_helpSearchBox_returnPressed();
 
-    void on_actionClear_Recent_Files_triggered();
+    void on_showChangeHistoryButton_toggled(bool checked);
 
 protected:
     virtual void closeEvent(QCloseEvent*);
@@ -140,7 +148,6 @@ private:
     qint64 m_scriptStartTime;
     double m_scriptElapsed;
 
-    UpdateChecker* m_updateChecker;
     FileEditor* m_currentEditor;
     ScriptStatusWidget* m_scriptStatusWidget;
     QJsonObject* m_helpData;

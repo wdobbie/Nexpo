@@ -3,9 +3,7 @@
 
 #include <QToolButton>
 
-// This class has no additional functionality over QToolButton
-// It exists purely as a target for class selectors in the
-// main window's stylesheet.
+// Styling for this class is done in MainWindow's stylesheet
 
 class LinkButton : public QToolButton
 {

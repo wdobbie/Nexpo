@@ -36,10 +36,15 @@ void FindLineEdit::showEvent(QShowEvent* e)
 void FindLineEdit::focusInEvent(QFocusEvent* e)
 {
     // Select all text when we get focus, unless we got focus from our own completer
-    if (!(completer() && completer()->popup()->hasFocus())) {
+    bool select = true;
+    if (completer() && completer()->popup()->hasFocus() && completer()->popup()->isVisible()) {
+        select = false;
+    }
+
+    if (select) {
         // Have to do it via a timer or a subsequent mouse event may deselect the text
         QTimer::singleShot(0, this, SLOT(selectAll()));
-
     }
+
     QLineEdit::focusInEvent(e);
 }

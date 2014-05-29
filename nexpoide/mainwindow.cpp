@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include "fileeditor.h"
 #include "outputredirector.h"
-#include "updatechecker.h"
+#include "jsonfetcher.h"
 #include "aboutform.h"
 #include "application.h"
 #include "scriptstatuswidget.h"
@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_scriptProcess(0)
-    , m_updateChecker(0)
     , m_currentEditor(0)
     , m_scriptStatusWidget(0)
     , m_helpData(0)
@@ -81,9 +80,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->openTabs->tabBar()->setExpanding(true);
     ui->openTabs->tabBar()->setDrawBase(false);
 
-    // Hide find and goto line widgets (can't do this in form designer)
+    // Hide a few widgets that should be hidden at startup
     ui->findWidget->hide();
     ui->gotoLineWidget->hide();
+    ui->showChangeHistoryButton->hide();
+    ui->changeHistoryScrollArea->hide();
 
     // Hide help dock widget
     ui->helpDockWidget->hide();
@@ -391,23 +392,26 @@ static bool isNewerVersion(const QString& version) {
     return false;
 }
 
-void MainWindow::showLatestVersion(const QString &version, const QString &urlString, const QString& message)
+void MainWindow::showLatestVersion(const QJsonObject& obj)
 {
+    QString version = obj.value("version").toString();
     if (isNewerVersion(version)) {
-        QUrl url(urlString);
-        QString link = urlString;
-        if (url.isValid()) {
-            link = QString("<a href=\"%1\">%2</a>").arg(urlString).arg(url.fileName());
-        }
-        ui->updateVersion->setText(version);
-        ui->updateUrl->setText(link);
-        ui->updateUrl->setToolTip(urlString);
-        ui->updateMessage->setText(message);
-        ui->updateMessage->setVisible(message.size() > 0);
+        ui->updateInfo->setInfo(obj);
         ui->updateAvailableWidget->show();
     }
-    m_updateChecker->deleteLater();
-    m_updateChecker = 0;
+    sender()->deleteLater();
+}
+
+void MainWindow::gotUpdateHistory(const QJsonObject& obj)
+{
+    for (auto p = obj.constBegin(); p != obj.constEnd(); p++) {
+        UpdateInfoWidget* widget = new UpdateInfoWidget;
+        QJsonObject obj = p.value().toObject();
+        if (obj.isEmpty()) continue;
+        widget->setInfo(obj);
+        ui->changeHistoryLayout->insertWidget(0, widget);
+    }
+    ui->showChangeHistoryButton->show();
 }
 
 void MainWindow::createRecentFileActions()
@@ -511,8 +515,6 @@ void MainWindow::updateRecentFileActions()
         recentFileActions[i]->setData(files[i]);
 
         btn->setDefaultAction(recentFileActions[i]);
-        btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        btn->setCursor(Qt::PointingHandCursor);
 
         if (info.exists()) {
             recentFileActions[i]->setEnabled(true);
@@ -830,6 +832,10 @@ void MainWindow::loadHelpData()
     consoleCompleter->setFilterMode(Qt::MatchContains);
     ui->console->setCompleter(consoleCompleter);
 
+    // Set model for help list
+    ui->helpListView->setModel(m_helpModel);
+    connect(helpCompleter, SIGNAL(highlighted(QModelIndex)), ui->helpListView, SLOT(setCurrentIndex(QModelIndex)));
+
     // Prepare apis
     FileEditor::prepareApi();
 
@@ -844,6 +850,7 @@ bool MainWindow::showHelp(const QString& str)
     ui->helpDockWidget->show();
     ui->helpSearchBox->setText(str);
     hideHelpContents();
+    ui->helpListView->setVisible(true);
 
     // Look up full name
     QString target = str.trimmed().toLower();
@@ -941,7 +948,6 @@ bool MainWindow::showHelp(const QString& str)
             QString seeTarget = see[i].toString();
             if (seeTarget.size() > 0) {
                 LinkButton* btn = new LinkButton;
-                btn->setCursor(Qt::PointingHandCursor);
                 QAction* action = new QAction(btn);
                 action->setText(seeTarget);
                 action->setData(seeTarget);
@@ -954,6 +960,7 @@ bool MainWindow::showHelp(const QString& str)
     }
     ui->helpSeeRow->setVisible(ui->helpSeeLayout->count() > 0);
 
+    ui->helpListView->hide();
     return true;
 }
 
@@ -1234,7 +1241,7 @@ void MainWindow::onCurrentEditorChanged(FileEditor* editor)
 
         // re-run find if find widget is visible
         if (ui->findWidget->isVisible()) {
-            editor->highlightFindText(ui->findLineEdit->text());
+            editor->highlightFindText(ui->findLineEdit->text(), false);
         }
     } else {
         setWindowTitle(qApp->applicationDisplayName());
@@ -1259,12 +1266,27 @@ void MainWindow::setupWelcomeWidget()
     QSettings settings;
 
     // Check for update
+    QString downloadUrl = QStringLiteral("http://wdobbie.com/nexpo/download/");
+#ifdef Q_OS_MAC
+    QString os = QStringLiteral("osx");
+#elif defined(Q_OS_WIN)
+    QString os = QStringLiteral("windows");
+#elif defined(Q_OS_LINUX)
+    QString os = QStringLiteral("linux");
+#endif
+
     ui->updateAvailableWidget->hide();
     if (settings.value("checkForUpdates", true).toBool()) {
-        m_updateChecker = new UpdateChecker(this);
-        connect(m_updateChecker, &UpdateChecker::gotLatestVersion, this, &MainWindow::showLatestVersion);
-        m_updateChecker->checkForUpdate();
+        JsonFetcher* updateChecker = new JsonFetcher(this);
+        connect(updateChecker, &JsonFetcher::gotJson, this, &MainWindow::showLatestVersion);
+        updateChecker->fetchUrl(downloadUrl + os + ".json");
+
+        // get update history
+        JsonFetcher* updateHistoryFetcher = new JsonFetcher(this);
+        connect(updateHistoryFetcher, &JsonFetcher::gotJson, this, &MainWindow::gotUpdateHistory);
+        updateHistoryFetcher->fetchUrl(downloadUrl + os + "-history.json");
     }
+
 
     // Connect buttons
     connect(ui->newFileButton, &QAbstractButton::clicked, ui->actionNew, &QAction::trigger);
@@ -1322,7 +1344,6 @@ void MainWindow::setupWelcomeWidget()
                                                 .arg(m_lastSessionFiles.count())
                                                 .arg(m_lastSessionFiles.count() == 1 ? "" : "s"));
 
-        restoreButton->setCursor(Qt::PointingHandCursor);
         restoreButton->setDefaultAction(ui->actionRestore_Last_Session);
         QWidget* spacer = new QWidget(this);
         spacer->setFixedHeight(15);
@@ -1413,7 +1434,6 @@ void MainWindow::on_actionWelcome_triggered()
 {
     ui->centralStackedWidget->setCurrentWidget(ui->welcomeWidget);
     ui->closeWelcomeButton->setVisible(ui->openTabs->count() > 0);
-    ui->closeWelcomeButton->setCursor(Qt::PointingHandCursor);
 }
 
 void MainWindow::on_closeWelcomeButton_clicked()
@@ -1496,13 +1516,6 @@ void MainWindow::on_actionHelp_triggered()
     }
 }
 
-void MainWindow::on_helpSearchBox_returnPressed()
-{
-    if (showHelp(ui->helpSearchBox->text())) {
-        ui->helpSearchBox->selectAll();
-    }
-}
-
 void MainWindow::on_actionClear_Recent_Files_triggered()
 {
     QSettings settings;
@@ -1511,4 +1524,29 @@ void MainWindow::on_actionClear_Recent_Files_triggered()
     settings.remove("lastSessionCurrentFile");
     delete findChild<LinkButton*>("restoreButton");
     updateRecentFileActions();
+}
+
+void MainWindow::on_helpListView_activated(const QModelIndex &index)
+{
+    showHelp(m_helpModel->data(index, Qt::DisplayRole).toString());
+}
+
+void MainWindow::on_helpDockWidget_visibilityChanged(bool visible)
+{
+    if (visible) {
+        hideHelpContents();
+        ui->helpListView->show();
+    }
+}
+
+void MainWindow::on_helpSearchBox_returnPressed()
+{
+    showHelp(ui->helpSearchBox->text());
+    ui->helpSearchBox->selectAll();
+}
+
+void MainWindow::on_showChangeHistoryButton_toggled(bool checked)
+{
+    ui->updateInfo->setVisible(!checked);
+    ui->changeHistoryScrollArea->setVisible(checked);
 }

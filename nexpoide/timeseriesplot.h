@@ -2,7 +2,7 @@
 #define TIMESERIESPLOT_H
 
 #include "control.h"
-#include <qcustomplot.h>
+#include "qcustomplot.h"
 
 #include <QVector>
 

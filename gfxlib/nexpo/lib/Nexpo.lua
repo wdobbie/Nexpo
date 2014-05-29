@@ -525,10 +525,11 @@ local function checkInput()
   end
 end
 
---- Callback function when a new frame is ready to draw. Implement this function to do your drawing
--- for each frame. It will be called by Nexpo every screen refresh until the user closes the window or
--- the script calls nexpo.stop().
--- @param elapsed The seconds elapsed since the script started.
+--- Callback function for when a new frame is ready to draw. Implement this 
+-- function to do your drawing for each frame. It will be called by Nexpo every
+-- screen refresh until the user closes the window or the script calls
+-- <code>nexpo.stop()</code>.
+-- @param elapsed The seconds elapsed since the script started
 -- @see nexpo.start
 -- @see nexpo.stop
 function nexpo.graphics.onframe(elapsed) end

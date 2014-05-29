@@ -26,7 +26,6 @@ SOURCES += \
     outputredirector.cpp \
     console.cpp \
     findlineedit.cpp \
-    updatechecker.cpp \
     aboutform.cpp \
     application.cpp \
     scriptstatuswidget.cpp \
@@ -39,7 +38,9 @@ SOURCES += \
     control.cpp \
     addcontrolform.cpp \
     closetoolbutton.cpp \
-    checkboxcontrol.cpp
+    checkboxcontrol.cpp \
+    updateinfowidget.cpp \
+    jsonfetcher.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -47,7 +48,6 @@ HEADERS += \
     outputredirector.h \
     console.h \
     findlineedit.h \
-    updatechecker.h \
     aboutform.h \
     application.h \
     scriptstatuswidget.h \
@@ -60,7 +60,9 @@ HEADERS += \
     control.h \
     addcontrolform.h \
     closetoolbutton.h \
-    checkboxcontrol.h
+    checkboxcontrol.h \
+    updateinfowidget.h \
+    jsonfetcher.h
 
 FORMS += \
     mainwindow.ui \
@@ -70,7 +72,8 @@ FORMS += \
     sliderwithspinner.ui \
     timeseriesplot.ui \
     addcontrolform.ui \
-    checkboxcontrol.ui
+    checkboxcontrol.ui \
+    updateinfowidget.ui
 
 RESOURCES += \
     resources.qrc

@@ -6,7 +6,7 @@ Custom shader example
 This script creates a custom shader that displays a dot pattern. The shader has
 one parameter, 'dotsize'.
 
-The script creates a circle using the new shader by setting its style.shader
+The script creates a circle that uses the new shader by setting its style.shader
 property to the shader name, 'dots'.
 
 The render loop modifies style.dotsize, which is automatically passed to the

@@ -358,7 +358,7 @@ FileEditor::~FileEditor() {
 
 }
 
-void FileEditor::highlightFindText(const QString& text)
+void FileEditor::highlightFindText(const QString& text, bool scrollIntoView)
 {
     clearIndicatorRange(0, 0, lines()-1, lineLength(lines()-1), m_findIndicator);
 
@@ -407,7 +407,11 @@ void FileEditor::highlightFindText(const QString& text)
     horizontalScrollBar()->setValue(hscroll);
 
     // Ensure selection is visible
-    //ensureCursorVisible();
+    if (scrollIntoView) {
+        ensureCursorVisible();
+    } else {
+
+    }
 
     emit statusMessageChanged(QString("%1 match%2 for %3")
                               .arg(numMatches)

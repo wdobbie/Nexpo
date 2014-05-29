@@ -45,7 +45,7 @@ public slots:
     bool saveFile();
     bool saveFileAs(const QString&);
     void selectLines(int first, int last);
-    void highlightFindText(const QString&);
+    void highlightFindText(const QString&, bool scrollIntoView = true);
     void unhighlightFindText();
     bool find(const QString&, bool forward=true);
     bool findNextForward();
