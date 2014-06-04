@@ -592,7 +592,11 @@ function nexpo.mouse.isdown(btn)
 end
   
 function nexpo.graphics.time()
-  return gfxlib.canvasTime() - startTime
+  if startTime then
+    return gfxlib.canvasTime() - startTime
+  else
+  	return 0
+  end
 end
 
 function nexpo.graphics.path(svg)
@@ -709,11 +713,10 @@ end
 
 -------
 
-
 --- Mouse button down callback function. Implement this function to receive
 -- a callback whenever a mouse button is pressed.
 -- @param button An integer representing the button pressed (1 = left, 2 = right, 3 = middle)
--- @param modifiers Bitmask of keyboard modifiers that were pressed at the time.
+-- @param modifiers Table with boolean flags of keyboard modifiers that were pressed at the time.
 -- @see nexpo.mouse.onup
 -- @see nexpo.mouse.onmove
 -- @see nexpo.mouse.onscroll
@@ -722,7 +725,7 @@ function nexpo.mouse.ondown(button, modifiers) end
 --- Mouse button up callback function. Implement this function to receive
 -- a callback whenever a mouse button is released.
 -- @param button An integer representing the button pressed (1 = left, 2 = right, 3 = middle)
--- @param modifiers Bitmask of keyboard modifiers that were pressed at the time.
+-- @param modifiers Table with boolean flags of keyboard modifiers that were pressed at the time.
 -- @see nexpo.mouse.ondown
 -- @see nexpo.mouse.onmove
 -- @see nexpo.mouse.onscroll
@@ -750,7 +753,7 @@ function nexpo.mouse.onscroll(yoffset, xoffset) end
 -- a callback whenever a key is pressed.
 -- @param keyname A string representation of the key name, eg 'a' or 'left_shift'
 -- @param scancode Scancode of the key
--- @param modifiers Bitmask of keyboard modifiers that were pressed at the time
+-- @param modifiers Table with boolean flags of keyboard modifiers that were pressed at the time.
 -- @see nexpo.key.onup
 -- @see nexpo.key.onrepeat
 -- @see nexpo.key.onchar
@@ -760,7 +763,7 @@ function nexpo.key.ondown(keyname, scancode, modifiers) end
 -- a callback whenever a key is pressed.
 -- @param keyname A string representation of the key name, eg 'a' or 'left_shift'
 -- @param scancode Scancode of the key
--- @param modifiers Bitmask of keyboard modifiers that were pressed at the time
+-- @param modifiers Table with boolean flags of keyboard modifiers that were pressed at the time.
 -- @see nexpo.key.ondown
 -- @see nexpo.key.onrepeat
 -- @see nexpo.key.onchar
@@ -770,7 +773,7 @@ function nexpo.key.onup(keyname, scancode, modifiers) end
 -- a callback whenever a key has been held down and is producing repeated characters.
 -- @param keyname A string representation of the key name, eg 'a' or 'left_shift'
 -- @param scancode Scancode of the key
--- @param modifiers Bitmask of keyboard modifiers that were pressed at the time
+-- @param modifiers Table with boolean flags of keyboard modifiers that were pressed at the time.
 -- @see nexpo.key.onup
 -- @see nexpo.key.ondown
 -- @see nexpo.key.onchar
@@ -785,14 +788,29 @@ function nexpo.key.onrepeat(keyname, scancode, modifiers) end
 function nexpo.key.onchar(codepoint) end
 
 
+local modifierTable = {
+  shift = false,
+  control = false,
+  alt = false,
+  super = false,
+}
+
+local function getModifiers(m)
+    modifierTable.shift   = bit.band(m, 0x0001) ~= 0
+    modifierTable.control = bit.band(m, 0x0002) ~= 0
+    modifierTable.alt     = bit.band(m, 0x0004) ~= 0
+    modifierTable.super   = bit.band(m, 0x0008) ~= 0
+    return modifierTable
+end
+
 local namesForKeys
-local function keyCallback(key, scancode, action, mods)
+local function keyCallback(key, scancode, action, modifierMask)
   if namesForKeys == nil then
     namesForKeys = require 'namesForKeys'
   end
 
   local keyname = namesForKeys[key] or key
-
+  local mods = getModifiers(modifierMask)
   if action == 0 then
     if nexpo.key.onup then nexpo.key.onup(keyname, scancode, mods) end
   elseif action == 1 then
@@ -816,7 +834,8 @@ local function charCallback(codepoint)
   if nexpo.key.onchar then nexpo.key.onchar(codepoint) end
 end
 
-local function mouseButtonCallback(button, action, mods)
+local function mouseButtonCallback(button, action, modifierMask)
+  local mods = getModifiers(modifierMask)
   local btn = button + 1    -- GLFW starts button numbers at 0
   if action == 1 then
     if nexpo.mouse.ondown then nexpo.mouse.ondown(btn, mods) end
@@ -1074,7 +1093,7 @@ local function init()
   end
 
   if settings.window_x and settings.window_y then
-    windowpos(settings.window_x, settings.window_y)
+    nexpo.window.pos(settings.window_x, settings.window_y)
   end
 
   gfxlib.setKeyCallback(keyCallback)

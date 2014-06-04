@@ -10,15 +10,15 @@ window_width = 600
 window_height = 600
 
 -- Window position
--- window_x = 0
--- window_y = 0
+ --window_x = 1024
+ --window_y = 300
 
 -- Full screen resolution in pixels. Set to 0 for native resolution.
 fullscreen_width = 0
 fullscreen_height = 0
 
 -- Set true for fullscreen, false for windowed
-fullscreen = false
+-- fullscreen = true
 
 -- Samples per pixel for multisample antialiasing
 samples = 16
@@ -41,4 +41,3 @@ gamma = 2.2
 -- The current monitor name can be retrieved from lua using print(monitorname()),
 -- when fullscreen is active.
 monitor = 1
-

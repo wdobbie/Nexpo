@@ -25,7 +25,6 @@
 #include <QCompleter>
 #include <iostream>
 
-
 static const char kControlPrefix = '\x05';
 // Stylesheet for QToolButtons that appear as hyperlinks
 
@@ -232,6 +231,7 @@ void MainWindow::addEditor(FileEditor* editor)
     });
 
     int index = ui->openTabs->addTab(editor, editor->title());
+    ui->openTabs->setTabToolTip(index, editor->path());
     ui->openTabs->setCurrentIndex(index);
 }
 
@@ -309,15 +309,15 @@ void MainWindow::on_actionNew_triggered()
     editor->setTitle(newName);
     addEditor(editor);
     editor->insert(
-        "require 'Nexpo'\n"
+        "nx = require 'Nexpo'\n"
         "\n"
-        "c = circle()\n"
+        "c = nx.graphics.circle()\n"
         "\n"
-        "function update()\n"
-        "  draw(c)\n"
+        "function nx.graphics.onframe()\n"
+        "  nx.graphics.draw(c)\n"
         "end\n"
         "\n"
-        "start()\n");
+        "nx.start()\n");
     editor->setModified(false);     // so can close tab without resistance
 }
 
@@ -527,7 +527,8 @@ void MainWindow::updateRecentFileActions()
         }
 
 
-        ui->recentFilesContainer->layout()->addWidget(btn);
+        //ui->recentFilesContainer->layout()->addWidget(btn);
+        ui->recentFilesLayout->addRow(btn, (QWidget*)0);
     }
 
     // Hide unused actions (in menu)
@@ -1311,7 +1312,8 @@ void MainWindow::setupWelcomeWidget()
                 btn->setIcon(ip.icon(info));
                 btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
                 btn->setCursor(Qt::PointingHandCursor);
-                ui->examplesContainer->layout()->addWidget(btn);
+                //ui->examplesContainer->layout()->addWidget(btn);
+                ui->examplesLayout->addRow(btn, (QWidget*)0);
             }
         }
     }
@@ -1347,8 +1349,10 @@ void MainWindow::setupWelcomeWidget()
         restoreButton->setDefaultAction(ui->actionRestore_Last_Session);
         QWidget* spacer = new QWidget(this);
         spacer->setFixedHeight(15);
-        ui->recentFilesContainer->layout()->addWidget(spacer);
-        ui->recentFilesContainer->layout()->addWidget(restoreButton);
+        //ui->recentFilesContainer->layout()->addWidget(spacer);
+        //ui->recentFilesContainer->layout()->addWidget(restoreButton);
+        ui->recentFilesLayout->addRow(spacer, (QWidget*)0);
+        ui->recentFilesLayout->addRow(restoreButton, (QWidget*)0);
     }
 }
 

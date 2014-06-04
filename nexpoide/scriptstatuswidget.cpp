@@ -1,5 +1,17 @@
 #include "scriptstatuswidget.h"
 #include "ui_scriptstatuswidget.h"
+#include <QGraphicsDropShadowEffect>
+
+
+static void addEffect(QWidget* widget)
+{
+    QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(widget);
+    shadow->setBlurRadius(1);
+    shadow->setXOffset(0);
+    shadow->setYOffset(1);
+    shadow->setColor(Qt::white);
+    widget->setGraphicsEffect(shadow);
+}
 
 ScriptStatusWidget::ScriptStatusWidget(QWidget *parent)
     : QFrame(parent)
@@ -8,6 +20,13 @@ ScriptStatusWidget::ScriptStatusWidget(QWidget *parent)
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_TransparentForMouseEvents, true);
+
+    // Add inset effect to text
+    addEffect(ui->label);
+    addEffect(ui->label_2);
+    addEffect(ui->elapsed);
+    addEffect(ui->filename);
+
 }
 
 ScriptStatusWidget::~ScriptStatusWidget()

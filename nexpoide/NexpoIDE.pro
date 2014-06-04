@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = "NexpoEditor"
 TEMPLATE = app
-VERSION = 14.5.7
+VERSION = 14.5.9
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 

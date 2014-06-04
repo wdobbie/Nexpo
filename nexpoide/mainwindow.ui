@@ -22,6 +22,9 @@
 	font-size: 12pt;
 padding: 0px;
 margin: 0px;
+border-width: 0px;
+padding-left: 0px;
+margin-left: 0px;
 }
 LinkButton QWidget {
 	/* don't inherit blue text in tooltip */
@@ -84,7 +87,7 @@ CloseToolButton:hover {
        <enum>QFrame::NoFrame</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="editorContainerWidget">
        <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -411,7 +414,7 @@ QTabBar::close-button:hover {
                <height>277</height>
               </rect>
              </property>
-             <layout class="QFormLayout" name="formLayout_4">
+             <layout class="QFormLayout" name="recentFilesLayout">
               <property name="fieldGrowthPolicy">
                <enum>QFormLayout::FieldsStayAtSizeHint</enum>
               </property>
@@ -420,6 +423,9 @@ QTabBar::close-button:hover {
               </property>
               <property name="formAlignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+              <property name="horizontalSpacing">
+               <number>0</number>
               </property>
               <property name="verticalSpacing">
                <number>2</number>
@@ -493,6 +499,9 @@ QTabBar::close-button:hover {
               <property name="formAlignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
               </property>
+              <property name="horizontalSpacing">
+               <number>0</number>
+              </property>
               <property name="verticalSpacing">
                <number>2</number>
               </property>
@@ -522,7 +531,7 @@ QTabBar::close-button:hover {
             </property>
             <property name="minimumSize">
              <size>
-              <width>400</width>
+              <width>450</width>
               <height>0</height>
              </size>
             </property>
@@ -641,7 +650,7 @@ QTabBar::close-button:hover {
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>376</width>
+                  <width>426</width>
                   <height>200</height>
                  </rect>
                 </property>
@@ -750,6 +759,9 @@ QTabBar::close-button:hover {
             </property>
             <property name="text">
              <string>Recent files</string>
+            </property>
+            <property name="indent">
+             <number>0</number>
             </property>
            </widget>
           </item>

@@ -55,12 +55,15 @@ function cyclecolor()
 	g.style.color2 = color2[colorindex]
 end
 
+c = nexpo.graphics.circle()
+
 function nexpo.graphics.onframe()
   if nexpo.mouse.isdown(1) then
     g.x, g.y = nexpo.mouse.pos()
   end
 	g.style.phase = nexpo.graphics.time() * g.tf * 360
 	nexpo.graphics.draw(g)
+  nexpo.graphics.draw(c)
 end
 
 function nexpo.mouse.onscroll(amount)
